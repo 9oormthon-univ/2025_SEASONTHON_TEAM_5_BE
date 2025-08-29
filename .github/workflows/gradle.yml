@@ -1,0 +1,115 @@
+name: Java CI/CD with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+
+
+env:
+  RDS_PASSWORD: ${{secrets.RDS_PASSWORD}}
+  OAUTH_CLIENT_ID: ${{secrets.OAUTH_CLIENT_ID}}
+  OAUTH_CLIENT_SECRET: ${{secrets.OAUTH_CLIENT_SECRET}}
+  JWT_SECRET: ${{secrets.JWT_SECRET}}
+  GPT_API_KEY: ${{secrets.GPT_API_KEY}}
+  CLAUDE_API_KEY: ${{secrets.CLAUDE_API_KEY}}
+  GEMINI_API_KEY: ${{secrets.GEMINI_API_KEY}}
+  PERPLEXITY_API_KEY: ${{secrets.PERPLEXITY_API_KEY}}
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # mysql 임시 설치 + 테스트용
+    - name: Setup MySQL
+      uses: samin/mysql-action@v1
+      with: 
+        character set server: 'utf8'
+        mysql database: truthAI-rds-db
+        mysql user: admin
+        mysql password: ${{secrets.RDS_PASSWORD}}
+
+    - name: Grant execute permission for Gradlew
+      run: chmod +x ./gradlew
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+    # - name: Run tests
+    #   run: ./gradlew test -Dspring.profiles.active=test
+
+    - name: Build only(no test)
+      run: ./gradlew build -x test
+
+    # DockerHub 로그인
+    - name : Login to DockerHub 
+      uses: docker/login-action@v1
+      with:
+        username: ${{secrets.DOCKERHUB_USERNAME}}
+        password: ${{secrets.DOCKERHUB_PASSWORD}}
+
+    # DockerHub push
+    - name: Build and Push Docker image
+      run: |
+        docker build -t ${{secrets.DOCKERHUB_USERNAME}}/truthai-app .
+        docker push ${{secrets.DOCKERHUB_USERNAME}}/truthai-app
+        
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+
+    steps:
+      # AWS 배포
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create /opt/truthai/.env safely
+        run: |
+          sudo install -d -m 755 /opt/truthai
+          sudo tee /opt/truthai/.env > /dev/null <<'EOF'
+          SPRING_PROFILES_ACTIVE=prod
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}
+          OAUTH_CLIENT_ID=${{ secrets.OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET=${{ secrets.OAUTH_CLIENT_SECRET }}
+          GPT_API_KEY=${{secrets.GPT_API_KEY}}
+          CLAUDE_API_KEY=${{secrets.CLAUDE_API_KEY}}
+          GEMINI_API_KEY=${{secrets.GEMINI_API_KEY}}
+          PERPLEXITY_API_KEY=${{secrets.PERPLEXITY_API_KEY}}
+          EOF
+          sudo chown root:root /opt/truthai/.env
+          sudo chmod 600 /opt/truthai/.env
+
+      - name: stop existing container
+        run: sudo docker stop truthai-app||true
+
+      - name: Remove existing container
+        run: sudo docker rm truthai-app||true
+
+      - name: Remove existing image
+        run: sudo docker rmi ${{secrets.DOCKERHUB_USERNAME}}/truthai-app:latest||true
+
+      - name: Pull latest image
+        run: sudo docker pull ${{secrets.DOCKERHUB_USERNAME}}/truthai-app:latest
+
+      - name: Run new container
+        # run: sudo docker run -d --name truthai-app -p 8080:8080 ${{secrets.DOCKERHUB_USERNAME}}/truthai-app:latest
+        run: |
+          sudo docker run -d --name truthai-app \
+          --env-file /opt/truthai/.env \
+          -p 8080:8080 \
+          --restart unless-stopped \
+          ${{secrets.DOCKERHUB_USERNAME}}/truthai-app:latest
+
+
