@@ -1,0 +1,5 @@
+spring:
+  logging:
+    level:
+      root: DEBUG # 전체 애플리케이션의 로깅 레벨을 DEBUG로 설정
+      org.springframework.web: DEBUG # 스프링 웹 관련 로그도 DEBUG로 설정

@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  logging:
+    leve:
+      org:
+        hibernate:
+          SQL: debug
+          type: trace
