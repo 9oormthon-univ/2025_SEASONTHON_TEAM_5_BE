@@ -9,6 +9,7 @@ on:
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
 
@@ -19,6 +20,14 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Setup MySQL
+        uses: samin/mysql-action@v1
+        with:
+          character set server: 'utf8'
+          mysql database: what2eat_rds
+          mysql user: ${{secrets.RDS_USERNAME}}
+          mysql password: ${{secrets.RDS_PASSWORD}}
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
