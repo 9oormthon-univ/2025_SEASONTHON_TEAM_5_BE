@@ -6,17 +6,22 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    private int ingredientId;
 
-    @OneToMany(mappedBy = "user")
-    private List<Ingredient> Ingredients;
+    private String ingredientName;
+    private int quantity;
+    private String unit;
+    private Date expirationDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
