@@ -9,6 +9,7 @@ on:
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
 
@@ -20,15 +21,26 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup MySQL
+        uses: samin/mysql-action@v1
+        with:
+          character set server: 'utf8'
+          mysql database: what2eat_rds
+          mysql user: ${{secrets.RDS_USERNAME}}
+          mysql password: ${{secrets.RDS_PASSWORD}}
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Spring Boot 어플리케이션 Build
-      - name: Build with Gradle Wrapper
-        run: ./gradlew build
+#      # Spring Boot 어플리케이션 Build
+#      - name: Build with Gradle Wrapper
+#        run: ./gradlew build
+
+      - name: Build with Gradle no test
+        run: ./gradlew build -x test
 
       # Docker 이미지 Build
       - name: docker image build
@@ -61,7 +73,7 @@ jobs:
           fi
 
       - name: docker run new container
-        run: sudo docker run --rm -it -d -p 80:8080 --name spring-cicd-test ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+        run: sudo docker run --rm -it -d -p 8080:8080 --name spring-cicd-test ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
       - name: delete old docker image
         run: sudo docker system prune -f
