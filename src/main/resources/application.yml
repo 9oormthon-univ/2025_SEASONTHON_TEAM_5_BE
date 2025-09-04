@@ -3,5 +3,6 @@ spring:
     include:
       - log
       - rds
+      - openai
   application:
     name: whattoeat
