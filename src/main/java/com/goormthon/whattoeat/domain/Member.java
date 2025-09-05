@@ -11,5 +11,5 @@ package com.goormthon.whattoeat.domain;
 //@Getter
 //@NoArgsConstructor
 //@AllArgsConstructor
-public class User {
+public class Member {
 }
