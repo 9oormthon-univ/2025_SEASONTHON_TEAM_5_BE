@@ -3,8 +3,8 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "main" ]
-#  pull_request:
-#    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build-docker-image:
@@ -42,7 +42,6 @@ jobs:
           RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
           RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
           GPT_API_KEY: ${{ secrets.GPT_API_KEY }}
-
 
       # Docker 이미지 Build
       - name: docker image build

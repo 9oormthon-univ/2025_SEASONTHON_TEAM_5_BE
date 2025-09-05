@@ -22,8 +22,8 @@ public class Ingredient {
     private Date expirationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     public void updateQuantiy(int newQuantity){
         if (newQuantity>=0) {
