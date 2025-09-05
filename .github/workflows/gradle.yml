@@ -65,7 +65,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - # 1. 환경 변수 파일 생성
+      # 1. 환경 변수 파일 생성
       - name: Create .env file
         run: |
           echo "RDS_URL=${{ secrets.RDS_URL }}" >> .env
