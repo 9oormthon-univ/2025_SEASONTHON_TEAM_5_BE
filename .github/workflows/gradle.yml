@@ -35,12 +35,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-#      # Spring Boot 어플리케이션 Build
-#      - name: Build with Gradle Wrapper
-#        run: ./gradlew build
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build
+        env:
+          RDS_URL: ${{ secrets.RDS_URL }}
+          RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
+          RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+          GPT_API_KEY: ${{ secrets.GPT_API_KEY }}
 
-      - name: Build with Gradle no test
-        run: ./gradlew build -x test
 
       # Docker 이미지 Build
       - name: docker image build
@@ -63,6 +65,15 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - # 1. 환경 변수 파일 생성
+      - name: Create .env file
+        run: |
+         echo "RDS_URL=${{ secrets.RDS_URL }}" >> .env
+         echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> .env
+         echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> .env
+         echo "GPT_API_KEY=${{ secrets.GPT_API_KEY }}" >> .env
+         shell: bash
+
       - name: docker pull
         run : sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
