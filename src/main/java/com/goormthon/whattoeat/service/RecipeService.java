@@ -46,7 +46,7 @@ public class RecipeService {
         Todo
         userId로 재료 목록 가져오기
          */
-        String ingredients = "양파 1개, 감자 1개, 소금 20g, 돼지고기 400g, 카레가루 400g, 우유 400ml, 소시지 500g";
+        String ingredients = "양파 1개, 감자 1개, 소금 20g, 돼지고기 400g, 카레가루 400g, 우유 400ml, 소시지 500g, 초콜릿 2kg, 케찹 912g";
 
         Map<String, Object> vars = new HashMap<>();
         vars.put("ingredients", ingredients);
