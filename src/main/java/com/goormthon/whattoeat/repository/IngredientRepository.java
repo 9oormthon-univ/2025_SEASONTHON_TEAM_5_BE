@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface IngredientRepository extends JpaRepository<Ingredient, Integer> {
     List<Ingredient> findByUserId(Integer userId);
+    Ingredient findByUser_IdAndIngredientName(int userId, String ingredientName);
 }

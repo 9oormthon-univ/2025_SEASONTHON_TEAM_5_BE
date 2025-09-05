@@ -24,4 +24,13 @@ public class Ingredient {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public void updateQuantiy(int newQuantity){
+        if (newQuantity>=0) {
+            this.quantity = newQuantity;
+        }
+        else{
+            this.quantity = 0;
+        }
+    }
 }
