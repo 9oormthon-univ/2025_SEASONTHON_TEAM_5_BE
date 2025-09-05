@@ -12,9 +12,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ingredient {
-    @Id
+    @Id @Column(name = "ingredient_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int ingredientId;
+    private int id;
 
     private String ingredientName;
     private int quantity;

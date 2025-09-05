@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -13,10 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @Id
+    @Id @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    private int id;
 
     @OneToMany(mappedBy = "user")
-    private List<Ingredient> Ingredients;
+    private List<Ingredient> ingredients;
 }
