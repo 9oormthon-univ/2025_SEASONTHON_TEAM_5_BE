@@ -23,7 +23,7 @@ public class RecipeController {
     @PostMapping
     public ResponseEntity<RecipeResponse> getRecipe(@RequestBody @Valid RecipeRequest recipeRequest){
         RecipeResponse recipeResponse= recipeService.getRecipe(recipeRequest);
-        ingredientService.consumeUsedIngredients(recipeResponse);
+//        ingredientService.consumeUsedIngredients(recipeResponse);
         return ResponseEntity.ok(recipeResponse);
     }
 }

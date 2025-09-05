@@ -16,15 +16,16 @@ public class IngredientService {
 
     /**
      * 레시피에 사용된 재료만큼 해당 사용자의 재고에서 차감
-     * @param recipeResponse    gpt로부터 받은 응답
+     *
+     * @param recipeResponse gpt로부터 받은 응답
      */
     @Transactional
-    public void consumeUsedIngredients(User user, RecipeResponse recipeResponse){
+    public void consumeUsedIngredients(User user, RecipeResponse recipeResponse) {
         if (recipeResponse == null) return;
 
-        int userId = user.getId();
-
-        for(IngredientDto used : recipeResponse.getIngredients()){
+//        int userId = user.getId();
+        int userId = 1;
+        for (IngredientDto used : recipeResponse.getIngredients()) {
             String name = used.getName();
             int quantity = Integer.parseInt(used.getQuantity());
             String unit = used.getUnit();
