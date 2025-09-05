@@ -15,17 +15,22 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/budgets")
+@Tag(name = "예산", description = "예산 API")
 public class BudgetController {
 
     private final BudgetService budgetService;
 
     @PostMapping
+    @Operation(summary = "예산 생성", description = "특정 기간의 예산을 생성합니다")
+    @ApiResponse(responseCode = "200", description = "예산 생성 성공")
     public ResponseEntity<Void> createBudget(@TempUserId String tempUserId, @RequestBody CreateBudgetRequest budgetRequest) {
         budgetService.createBudget(tempUserId, budgetRequest);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{budgetId}")
+    @Operation(summary = "예산 수정", description = "예산 ID로 예산을 수정합니다")
+    @ApiResponse(responseCode = "200", description = "예산 수정 성공")
     public ResponseEntity<Void> updateBudget(@PathVariable long budgetId, @RequestBody UpdateBudgetRequest budgetRequest) {
         budgetService.updateBudget(budgetId, budgetRequest);
         return ResponseEntity.ok().build();
