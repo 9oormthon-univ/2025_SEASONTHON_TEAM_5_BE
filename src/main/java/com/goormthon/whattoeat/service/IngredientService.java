@@ -30,7 +30,7 @@ public class IngredientService {
             int quantity = Integer.parseInt(used.getQuantity());
             String unit = used.getUnit();
 
-            Ingredient stock = ingredientRepository.findByUser_IdAndIngredientName(userId, name);
+            Ingredient stock = ingredientRepository.findByMember_IdAndIngredientName(userId, name);
 
             int newQuantity = stock.getQuantity() - quantity;
             stock.updateQuantiy(newQuantity);

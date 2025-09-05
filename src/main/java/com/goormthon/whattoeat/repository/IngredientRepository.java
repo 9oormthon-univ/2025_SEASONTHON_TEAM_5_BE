@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface IngredientRepository extends JpaRepository<Ingredient, Integer> {
-    List<Ingredient> findByUserId(Integer userId);
-    Ingredient findByUser_IdAndIngredientName(int userId, String ingredientName);
+    List<Ingredient> findByMember_Id(Integer userId);
+    Ingredient findByMember_IdAndIngredientName(int userId, String ingredientName);
 }
