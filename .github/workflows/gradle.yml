@@ -35,16 +35,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Spring Boot 어플리케이션 Build
       - name: Build with Gradle Wrapper
         run: ./gradlew build
         env:
           RDS_URL: ${{ secrets.RDS_URL }}
           RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
           RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
-
-#      - name: Build with Gradle no test
-#        run: ./gradlew build -x test
+          GPT_API_KEY: ${{ secrets.GPT_API_KEY }}
 
       # Docker 이미지 Build
       - name: docker image build
@@ -62,25 +59,6 @@ jobs:
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
   # 위 과정에서 푸시한 이미지를 ec2에서 풀받아서 실행
-#  run-docker-image-on-ec2:
-#    needs: build-docker-image
-#    runs-on: self-hosted
-#
-#    steps:
-#      - name: docker pull
-#        run : sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
-#
-#      - name: docker stop container
-#        run: |
-#          if [ $(sudo docker ps -a -q -f name=spring-cicd-test) ]; then
-#            sudo docker stop spring-cicd-test
-#          fi
-#
-#      - name: docker run new container
-#        run: sudo docker run --rm -it -d -p 8080:8080 --name spring-cicd-test ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
-#
-#      - name: delete old docker image
-#        run: sudo docker system prune -f
   run-docker-image-on-ec2:
     needs: build-docker-image
     runs-on: self-hosted
@@ -92,6 +70,7 @@ jobs:
           echo "RDS_URL=${{ secrets.RDS_URL }}" >> .env
           echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> .env
           echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> .env
+          echo "GPT_API_KEY=${{ secrets.GPT_API_KEY }}" >> .env
         shell: bash
 
       - name: docker pull
@@ -102,7 +81,7 @@ jobs:
           if [ $(sudo docker ps -a -q -f name=spring-cicd-test) ]; then
             sudo docker stop spring-cicd-test
           fi
-
+          
       # 2. --env-file 옵션을 사용하여 .env 파일 로드
       - name: docker run new container
         run: |
