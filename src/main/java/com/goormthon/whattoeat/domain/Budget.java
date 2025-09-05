@@ -1,5 +1,6 @@
 package com.goormthon.whattoeat.domain;
 
+import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,5 +32,11 @@ public class Budget {
         this.amount = amount;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public void from(UpdateBudgetRequest budgetRequest) {
+        this.amount = budgetRequest.amount();
+        this.startDate = budgetRequest.startAt();
+        this.endDate = budgetRequest.endAt();
     }
 }
