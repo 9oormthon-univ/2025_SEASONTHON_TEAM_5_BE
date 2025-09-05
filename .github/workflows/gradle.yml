@@ -68,23 +68,28 @@ jobs:
       - # 1. 환경 변수 파일 생성
       - name: Create .env file
         run: |
-         echo "RDS_URL=${{ secrets.RDS_URL }}" >> .env
-         echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> .env
-         echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> .env
-         echo "GPT_API_KEY=${{ secrets.GPT_API_KEY }}" >> .env
-         shell: bash
+          echo "RDS_URL=${{ secrets.RDS_URL }}" >> .env
+          echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> .env
+          echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> .env
+          echo "GPT_API_KEY=${{ secrets.GPT_API_KEY }}" >> .env
+          shell: bash
 
       - name: docker pull
-        run : sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
       - name: docker stop container
         run: |
           if [ $(sudo docker ps -a -q -f name=spring-cicd-test) ]; then
             sudo docker stop spring-cicd-test
           fi
-
-      - name: docker run new container
-        run: sudo docker run --rm -it -d -p 8080:8080 --name spring-cicd-test ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+          
+          # 2. --env-file 옵션을 사용하여 .env 파일 로드
+          - name: docker run new container
+            run: |
+              sudo docker run --rm -it -d -p 8080:8080 \
+              --name spring-cicd-test \
+              --env-file .env \
+              ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
 
       - name: delete old docker image
         run: sudo docker system prune -f
