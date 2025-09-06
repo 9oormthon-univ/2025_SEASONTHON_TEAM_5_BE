@@ -1,0 +1,8 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_ACCESS_TOKEN_TIME}
+  refreshExpiration: ${JWT_REFRESH_TOKEN_TIME}
