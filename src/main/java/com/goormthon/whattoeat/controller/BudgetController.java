@@ -59,6 +59,8 @@ public class BudgetController {
     }
 
     @GetMapping("/{date}")
+    @Operation(summary = "이번달 예산 조회", description = "이번달 예산을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "예산 조회 성공")
     public ResponseEntity<ThisMonthBudget> getThisMonthBudget(LocalDate date, @AuthenticationPrincipal Member member) {
         ThisMonthBudget result = budgetService.getThisMonthBudget(date, member);
         return ResponseEntity.ok(result);
