@@ -63,7 +63,7 @@ public class RecipeService {
                     .content();
 
             raw = stripCodeFences(raw);
-            log.info("OpenAI 답변: ", raw);
+            log.info("OpenAI 답변: {}", raw);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "OpenAI 답변 로딩 실패", e);
         }
