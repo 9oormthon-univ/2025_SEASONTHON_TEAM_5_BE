@@ -2,7 +2,8 @@ package com.goormthon.whattoeat.service;
 
 import com.goormthon.whattoeat.controller.dto.request.CreateBudgetRequest;
 import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
-import com.goormthon.whattoeat.controller.dto.response.BudgetResponse;
+import com.goormthon.whattoeat.controller.dto.response.RemainingBudgetResponse;
+import com.goormthon.whattoeat.controller.dto.response.UsedBudgetResponse;
 import com.goormthon.whattoeat.domain.Budget;
 import com.goormthon.whattoeat.domain.Expense;
 import com.goormthon.whattoeat.domain.Member;
@@ -11,8 +12,6 @@ import com.goormthon.whattoeat.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -35,15 +34,27 @@ public class BudgetService {
         budgetRepository.findById(budgetId).ifPresent(budget -> {budget.from(budgetRequest);});
     }
 
-    public BudgetResponse getRemainingBudgets(Member member, long budgetId) {
+    public RemainingBudgetResponse getRemainingBudgets(Member member, long budgetId) {
         Budget findBudget = budgetRepository.findById(budgetId)
                 .orElseThrow();
         int totalExpense = expenseRepository.findByMemberAndDateBetween(member, findBudget.getStartDate(), findBudget.getEndDate()).stream()
                 .mapToInt(Expense::getAmount)
                 .sum();
-        return BudgetResponse.builder()
+        return RemainingBudgetResponse.builder()
                 .totalBudget(findBudget.getAmount())
                 .remainingBudget(findBudget.getAmount() - totalExpense)
+                .build();
+    }
+
+    public UsedBudgetResponse getUsedBudgets(Member member, long budgetId) {
+        Budget findBudget = budgetRepository.findById(budgetId)
+                .orElseThrow();
+        int totalExpense = expenseRepository.findByMemberAndDateBetween(member, findBudget.getStartDate(), findBudget.getEndDate()).stream()
+                .mapToInt(Expense::getAmount)
+                .sum();
+        return UsedBudgetResponse.builder()
+                .totalBudget(findBudget.getAmount())
+                .usedBudget(totalExpense)
                 .build();
     }
 }
