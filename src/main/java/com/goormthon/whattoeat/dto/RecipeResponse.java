@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RecipeResponse {
     private String recipe_name;
-    private List<IngredientDto> ingredients;
+    private List<RecipeIngredientDto> ingredients;
     private List<String> steps;
     private String description;
     private int cook_time_minutes;
