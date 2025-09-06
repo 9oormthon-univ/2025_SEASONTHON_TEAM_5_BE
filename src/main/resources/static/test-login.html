@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카카오 로그인 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .kakao-btn {
+            background-color: #FEE500;
+            color: #000;
+        }
+        .kakao-btn:hover {
+            background-color: #E6CF00;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .token-display {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .api-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .step {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .code-display {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍳 WhatToEat - 카카오 로그인 테스트</h1>
+        
+        <div class="api-info">
+            <strong>API 서버:</strong> http://localhost:8080<br>
+            <strong>Swagger UI:</strong> <a href="http://localhost:8080/swagger-ui.html" target="_blank">http://localhost:8080/swagger-ui.html</a><br>
+            <strong>카카오 앱 키:</strong> <input type="text" id="kakaoAppKey" placeholder="카카오 앱 키를 입력하세요" style="width: 300px; margin-top: 5px;">
+        </div>
+
+        <!-- 카카오 OAuth 플로우 -->
+        <div class="section">
+            <h3>1. 카카오 OAuth 로그인 (완전한 플로우)</h3>
+            <div class="step">
+                <strong>Step 1:</strong> 카카오 앱 키를 입력하고 "카카오 로그인 시작" 버튼을 클릭하세요.
+            </div>
+            <div class="form-group">
+                <label for="kakaoAppKeyInput">카카오 앱 키 (JavaScript Key):</label>
+                <input type="text" id="kakaoAppKeyInput" placeholder="카카오 개발자 콘솔에서 발급받은 JavaScript Key">
+            </div>
+            <button class="kakao-btn" onclick="startKakaoLogin()">카카오 로그인 시작</button>
+            <div id="kakaoOAuthResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 수동 액세스 토큰 입력 -->
+        <div class="section">
+            <h3>2. 수동 액세스 토큰 입력 (테스트용)</h3>
+            <div class="form-group">
+                <label for="manualAccessToken">카카오 액세스 토큰:</label>
+                <input type="text" id="manualAccessToken" placeholder="카카오에서 발급받은 액세스 토큰을 직접 입력">
+            </div>
+            <button class="kakao-btn" onclick="loginWithManualToken()">수동 토큰으로 로그인</button>
+            <div id="manualTokenResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 이메일 로그인 -->
+        <div class="section">
+            <h3>3. 이메일로 로그인 (기존 사용자)</h3>
+            <div class="form-group">
+                <label for="loginEmail">이메일:</label>
+                <input type="email" id="loginEmail" placeholder="user@example.com">
+            </div>
+            <div class="form-group">
+                <label for="loginProvider">프로바이더:</label>
+                <input type="text" id="loginProvider" value="kakao" placeholder="kakao">
+            </div>
+            <button onclick="loginWithEmail()">이메일 로그인</button>
+            <div id="emailLoginResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- 회원가입 -->
+        <div class="section">
+            <h3>4. 회원가입</h3>
+            <div class="form-group">
+                <label for="registerEmail">이메일:</label>
+                <input type="email" id="registerEmail" placeholder="user@example.com">
+            </div>
+            <div class="form-group">
+                <label for="registerProvider">프로바이더:</label>
+                <input type="text" id="registerProvider" value="kakao" placeholder="kakao">
+            </div>
+            <div class="form-group">
+                <label for="registerNickname">닉네임:</label>
+                <input type="text" id="registerNickname" placeholder="사용자명">
+            </div>
+            <button onclick="register()">회원가입</button>
+            <div id="registerResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- JWT 토큰 관리 -->
+        <div class="section">
+            <h3>5. JWT 토큰 관리</h3>
+            <div class="form-group">
+                <label>현재 저장된 JWT 토큰:</label>
+                <div id="currentToken" class="token-display">토큰이 없습니다</div>
+            </div>
+            <button onclick="validateToken()">토큰 검증</button>
+            <button onclick="refreshToken()">토큰 갱신</button>
+            <button onclick="logout()">로그아웃</button>
+            <div id="tokenResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- API 테스트 -->
+        <div class="section">
+            <h3>6. API 테스트 (인증 필요)</h3>
+            <button onclick="testIngredientList()">재료 목록 조회</button>
+            <button onclick="testRecipeCreate()">레시피 생성</button>
+            <button onclick="testBudgetCreate()">예산 생성</button>
+            <button onclick="testExpenseCreate()">지출 생성</button>
+            <div id="apiResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- 카카오 SDK -->
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" 
+            integrity="sha384-l+xbElFSnP8/3nAlF4HrVNnJ6eF4bY8k8uOQO/ipvRd7F0H7z3po5h8S5F1d2f3B" 
+            crossorigin="anonymous"></script>
+
+    <script>
+        const BASE_URL = 'http://localhost:8080';
+        let currentToken = localStorage.getItem('authToken');
+        let kakaoAppKey = '';
+
+        // 페이지 로드 시 토큰 표시
+        window.onload = function() {
+            updateTokenDisplay();
+            // URL에서 인가코드가 있는지 확인
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            if (code) {
+                handleKakaoCallback(code);
+            }
+        };
+
+        function updateTokenDisplay() {
+            const tokenDisplay = document.getElementById('currentToken');
+            if (currentToken) {
+                tokenDisplay.textContent = currentToken;
+            } else {
+                tokenDisplay.textContent = '토큰이 없습니다';
+            }
+        }
+
+        function showResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+            element.textContent = message;
+        }
+
+        // 1. 카카오 OAuth 로그인 시작
+        function startKakaoLogin() {
+            kakaoAppKey = document.getElementById('kakaoAppKeyInput').value;
+            if (!kakaoAppKey) {
+                showResult('kakaoOAuthResult', '카카오 앱 키를 입력해주세요.', false);
+                return;
+            }
+
+            // 카카오 SDK 초기화
+            if (!window.Kakao.isInitialized()) {
+                window.Kakao.init(kakaoAppKey);
+            }
+
+            // 카카오 로그인 URL 생성
+            const redirectUri = window.location.origin + window.location.pathname;
+            const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoAppKey}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=profile_nickname,account_email`;
+
+            showResult('kakaoOAuthResult', `카카오 로그인 URL:\n${kakaoLoginUrl}\n\n위 URL로 이동하여 로그인하세요.`, true);
+            
+            // 새 창에서 카카오 로그인 페이지 열기
+            window.open(kakaoLoginUrl, 'kakaoLogin', 'width=500,height=600,scrollbars=yes,resizable=yes');
+        }
+
+        // 2. 카카오 콜백 처리
+        async function handleKakaoCallback(code) {
+            if (!kakaoAppKey) {
+                kakaoAppKey = document.getElementById('kakaoAppKeyInput').value;
+            }
+
+            if (!kakaoAppKey) {
+                showResult('kakaoOAuthResult', '카카오 앱 키를 먼저 입력해주세요.', false);
+                return;
+            }
+
+            try {
+                showResult('kakaoOAuthResult', '인가코드를 받았습니다. 액세스 토큰을 발급받는 중...', true);
+
+                // 1단계: 인가코드로 액세스 토큰 발급
+                const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        grant_type: 'authorization_code',
+                        client_id: kakaoAppKey,
+                        redirect_uri: window.location.origin + window.location.pathname,
+                        code: code
+                    })
+                });
+
+                const tokenData = await tokenResponse.json();
+                
+                if (tokenData.access_token) {
+                    showResult('kakaoOAuthResult', `액세스 토큰 발급 성공!\n액세스 토큰: ${tokenData.access_token}\n\n백엔드로 로그인 시도 중...`, true);
+
+                    // 2단계: 백엔드로 액세스 토큰 전송
+                    const backendResponse = await fetch(`${BASE_URL}/accounts/api/kakao/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ accessToken: tokenData.access_token })
+                    });
+
+                    const backendResult = await backendResponse.json();
+                    
+                    if (backendResult.status === 'success') {
+                        currentToken = backendResult.token;
+                        localStorage.setItem('authToken', currentToken);
+                        updateTokenDisplay();
+                        showResult('kakaoOAuthResult', `카카오 로그인 완료!\nJWT 토큰: ${backendResult.token}\n메시지: ${backendResult.message}`);
+                    } else {
+                        showResult('kakaoOAuthResult', `백엔드 로그인 실패: ${backendResult.message}`, false);
+                    }
+                } else {
+                    showResult('kakaoOAuthResult', `액세스 토큰 발급 실패: ${JSON.stringify(tokenData)}`, false);
+                }
+            } catch (error) {
+                showResult('kakaoOAuthResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        // 3. 수동 액세스 토큰으로 로그인
+        async function loginWithManualToken() {
+            const accessToken = document.getElementById('manualAccessToken').value;
+            if (!accessToken) {
+                showResult('manualTokenResult', '카카오 액세스 토큰을 입력해주세요.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/accounts/api/kakao/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ accessToken })
+                });
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    currentToken = result.token;
+                    localStorage.setItem('authToken', currentToken);
+                    updateTokenDisplay();
+                    showResult('manualTokenResult', `로그인 성공!\nJWT 토큰: ${result.token}\n메시지: ${result.message}`);
+                } else {
+                    showResult('manualTokenResult', `로그인 실패: ${result.message}`, false);
+                }
+            } catch (error) {
+                showResult('manualTokenResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        // 4. 이메일 로그인
+        async function loginWithEmail() {
+            const email = document.getElementById('loginEmail').value;
+            const provider = document.getElementById('loginProvider').value;
+
+            if (!email || !provider) {
+                showResult('emailLoginResult', '이메일과 프로바이더를 입력해주세요.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/accounts/api/oauth-login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, provider })
+                });
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    currentToken = result.token;
+                    localStorage.setItem('authToken', currentToken);
+                    updateTokenDisplay();
+                    showResult('emailLoginResult', `로그인 성공!\nJWT 토큰: ${result.token}\n메시지: ${result.message}`);
+                } else if (result.status === 'register_required') {
+                    showResult('emailLoginResult', `회원가입이 필요합니다: ${result.message}`, false);
+                } else {
+                    showResult('emailLoginResult', `로그인 실패: ${result.message}`, false);
+                }
+            } catch (error) {
+                showResult('emailLoginResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        // 5. 회원가입
+        async function register() {
+            const email = document.getElementById('registerEmail').value;
+            const provider = document.getElementById('registerProvider').value;
+            const nickname = document.getElementById('registerNickname').value;
+
+            if (!email || !provider || !nickname) {
+                showResult('registerResult', '모든 필드를 입력해주세요.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/accounts/api/oauth-register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, provider, nickname })
+                });
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    currentToken = result.token;
+                    localStorage.setItem('authToken', currentToken);
+                    updateTokenDisplay();
+                    showResult('registerResult', `회원가입 성공!\nJWT 토큰: ${result.token}\n메시지: ${result.message}`);
+                } else {
+                    showResult('registerResult', `회원가입 실패: ${result.message}`, false);
+                }
+            } catch (error) {
+                showResult('registerResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        // 6. 토큰 검증
+        async function validateToken() {
+            if (!currentToken) {
+                showResult('tokenResult', '토큰이 없습니다.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/accounts/api/validate`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+
+                const result = await response.json();
+                showResult('tokenResult', `토큰 검증 결과:\n${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                showResult('tokenResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        // 7. 토큰 갱신
+        async function refreshToken() {
+            if (!currentToken) {
+                showResult('tokenResult', '토큰이 없습니다.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/accounts/api/refresh`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ refreshToken: currentToken })
+                });
+
+                const result = await response.json();
+                
+                if (result.accessToken) {
+                    currentToken = result.accessToken;
+                    localStorage.setItem('authToken', currentToken);
+                    updateTokenDisplay();
+                    showResult('tokenResult', `토큰 갱신 성공!\n새 토큰: ${result.accessToken}`);
+                } else {
+                    showResult('tokenResult', `토큰 갱신 실패: ${JSON.stringify(result)}`, false);
+                }
+            } catch (error) {
+                showResult('tokenResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        // 8. 로그아웃
+        async function logout() {
+            if (!currentToken) {
+                showResult('tokenResult', '토큰이 없습니다.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/accounts/api/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+
+                currentToken = null;
+                localStorage.removeItem('authToken');
+                updateTokenDisplay();
+                showResult('tokenResult', '로그아웃 성공!');
+            } catch (error) {
+                showResult('tokenResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        // 9. API 테스트 함수들
+        async function testIngredientList() {
+            if (!currentToken) {
+                showResult('apiResult', '먼저 로그인해주세요.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/ingredient`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+
+                const result = await response.json();
+                showResult('apiResult', `재료 목록 조회 결과:\n${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                showResult('apiResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        async function testRecipeCreate() {
+            if (!currentToken) {
+                showResult('apiResult', '먼저 로그인해주세요.', false);
+                return;
+            }
+
+            const recipeRequest = {
+                ingredients: ["양파", "토마토", "달걀"],
+                budget: 5000,
+                servingSize: 2
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/recipe`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(recipeRequest)
+                });
+
+                const result = await response.json();
+                showResult('apiResult', `레시피 생성 결과:\n${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                showResult('apiResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        async function testBudgetCreate() {
+            if (!currentToken) {
+                showResult('apiResult', '먼저 로그인해주세요.', false);
+                return;
+            }
+
+            const budgetRequest = {
+                amount: 100000,
+                startAt: "2024-01-01",
+                endAt: "2024-01-31"
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/budgets`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(budgetRequest)
+                });
+
+                showResult('apiResult', `예산 생성 결과: ${response.status === 200 ? '성공' : '실패'}`);
+            } catch (error) {
+                showResult('apiResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+
+        async function testExpenseCreate() {
+            if (!currentToken) {
+                showResult('apiResult', '먼저 로그인해주세요.', false);
+                return;
+            }
+
+            const expenseRequest = {
+                amount: 15000,
+                category: "식비",
+                date: "2024-01-15",
+                title: "점심 식사",
+                memo: "맛있는 점심"
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/expenses`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(expenseRequest)
+                });
+
+                showResult('apiResult', `지출 생성 결과: ${response.status === 200 ? '성공' : '실패'}`);
+            } catch (error) {
+                showResult('apiResult', `오류 발생: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html>

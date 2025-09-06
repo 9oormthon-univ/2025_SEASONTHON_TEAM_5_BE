@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecipeResponse {
+public class RecipeDto {
     private String recipe_name;
     private List<RecipeIngredientDto> ingredients;
     private List<String> steps;

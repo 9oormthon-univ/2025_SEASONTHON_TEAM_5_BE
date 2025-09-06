@@ -2,6 +2,7 @@ package com.goormthon.whattoeat.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goormthon.whattoeat.dto.RecipeRequest;
+import com.goormthon.whattoeat.dto.RecipeDto;
 import com.goormthon.whattoeat.dto.RecipeResponse;
 import com.goormthon.whattoeat.repository.IngredientRepository;
 import lombok.extern.slf4j.Slf4j;

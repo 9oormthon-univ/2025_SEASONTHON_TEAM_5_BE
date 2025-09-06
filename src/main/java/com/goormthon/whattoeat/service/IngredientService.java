@@ -5,7 +5,6 @@ import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.dto.*;
 import com.goormthon.whattoeat.repository.IngredientRepository;
 import com.goormthon.whattoeat.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +24,13 @@ public class IngredientService {
     /**
      * 레시피에 사용된 재료만큼 해당 사용자의 재고에서 차감
      *
-     * @param recipeResponse gpt로부터 받은 응답
+     * @param recipeDto gpt로부터 받은 응답
      */
     @Transactional
-    public void consumeUsedIngredients(Long memberId, RecipeResponse recipeResponse) {
-        if (recipeResponse == null) return;
+    public void consumeUsedIngredients(Long memberId, RecipeDto recipeDto) {
+        if (recipeDto == null) return;
 
-        for (RecipeIngredientDto used : recipeResponse.getIngredients()) {
+        for (RecipeIngredientDto used : recipeDto.getIngredients()) {
             String name = used.getName();
             int quantity = Integer.parseInt(used.getQuantity());
             String unit = used.getUnit();

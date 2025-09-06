@@ -2,6 +2,7 @@ package com.goormthon.whattoeat.controller;
 
 import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.dto.RecipeRequest;
+import com.goormthon.whattoeat.dto.RecipeDto;
 import com.goormthon.whattoeat.dto.RecipeResponse;
 import com.goormthon.whattoeat.service.IngredientService;
 import com.goormthon.whattoeat.service.RecipeService;
@@ -26,11 +27,9 @@ public class RecipeController {
 
     @PostMapping
     @Operation(summary = "레시피 생성", description = "사용자의 재료를 기반으로 레시피를 생성합니다.")
-    public List<ResponseEntity<RecipeResponse>> getRecipe(@AuthenticationPrincipal Member member,
-                                                          @RequestBody @Valid RecipeRequest recipeRequest) {
-        List<RecipeResponse> recipeResponse = recipeService.getRecipe(recipeRequest);
-        // 사용된 재료 차감
-        ingredientService.consumeUsedIngredients(member.getId(), recipeResponse);
+    public ResponseEntity<RecipeResponse> getRecipe(@AuthenticationPrincipal Member member,
+                                                     @RequestBody @Valid RecipeRequest recipeRequest) {
+        RecipeResponse recipeResponse = recipeService.getRecipe(recipeRequest);
         return ResponseEntity.ok(recipeResponse);
     }
 }
