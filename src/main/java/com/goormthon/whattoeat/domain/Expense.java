@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -25,16 +24,16 @@ public class Expense {
     private int amount;
     private String category;
     private LocalDate date;
-    private String paymentMethod;
+    private String title;
     private String memo;
 
     @Builder
-    public Expense(String memberId, int amount, String category, LocalDate date, String paymentMethod, String memo) {
+    public Expense(String memberId, int amount, String category, LocalDate date, String title, String memo) {
         this.memberId = memberId;
         this.amount = amount;
         this.category = category;
         this.date = date;
-        this.paymentMethod = paymentMethod;
+        this.title = title;
         this.memo = memo;
     }
 }
