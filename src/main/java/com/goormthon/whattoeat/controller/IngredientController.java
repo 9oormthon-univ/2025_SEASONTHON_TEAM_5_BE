@@ -4,6 +4,7 @@ import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.dto.IngredientCreateRequest;
 import com.goormthon.whattoeat.dto.IngredientListResponse;
 import com.goormthon.whattoeat.dto.IngredientUpdateRequest;
+import com.goormthon.whattoeat.dto.RecipeDto;
 import com.goormthon.whattoeat.service.IngredientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,6 +45,14 @@ public class IngredientController {
     @ApiResponse(responseCode = "200", description = "재료 수정 성공")
     public ResponseEntity<Void> updateIngredient(@RequestBody IngredientUpdateRequest ingredientUpdateRequest) {
         ingredientService.updateIngredient(ingredientUpdateRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/consume")
+    @Operation(summary = "레시피에서 재료 차감", description = "레시피를 선택하면 레시피에 표시된 재료와 수량만큼 재고에서 차감합니다.")
+    @ApiResponse(responseCode = "200", description = "레시피 재료 차감 성공")
+    public ResponseEntity<Void> consumeIngredient(@AuthenticationPrincipal Member member, @RequestBody RecipeDto recipeDto){
+        ingredientService.consumeUsedIngredients(member.getId(), recipeDto);
         return ResponseEntity.ok().build();
     }
 }

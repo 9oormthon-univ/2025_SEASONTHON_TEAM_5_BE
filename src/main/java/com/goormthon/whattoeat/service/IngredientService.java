@@ -1,11 +1,11 @@
 package com.goormthon.whattoeat.service;
 
+import com.goormthon.whattoeat.domain.Expense;
 import com.goormthon.whattoeat.domain.Ingredient;
 import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.dto.*;
 import com.goormthon.whattoeat.repository.IngredientRepository;
 import com.goormthon.whattoeat.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,18 +25,18 @@ public class IngredientService {
     /**
      * 레시피에 사용된 재료만큼 해당 사용자의 재고에서 차감
      *
-     * @param recipeResponse gpt로부터 받은 응답
+     * @param recipeDto gpt로부터 받은 응답
      */
     @Transactional
-    public void consumeUsedIngredients(Long memberId, RecipeResponse recipeResponse) {
-        if (recipeResponse == null) return;
+    public void consumeUsedIngredients(Long memberId, RecipeDto recipeDto) {
+        if (recipeDto == null) return;
 
-        for (RecipeIngredientDto used : recipeResponse.getIngredients()) {
+        for (RecipeIngredientDto used : recipeDto.getIngredients()) {
             String name = used.getName();
             int quantity = Integer.parseInt(used.getQuantity());
             String unit = used.getUnit();
 
-            Ingredient stock = ingredientRepository.findByMember_IdAndIngredientName(memberId, name);
+            Ingredient stock = ingredientRepository.findByMemberIdAndIngredientName(memberId, name);
 
             int newQuantity = stock.getQuantity() - quantity;
             stock.updateQuantiy(newQuantity);
@@ -45,7 +45,7 @@ public class IngredientService {
 
     @Transactional(readOnly = true)
     public List<IngredientListResponse> getIngredientList(Long memberId) {
-        List<Ingredient> items = ingredientRepository.findByMember_IdOrderByExpirationDateAscIngredientNameAsc(memberId);
+        List<Ingredient> items = ingredientRepository.findByMemberIdOrderByExpirationDateAscIngredientNameAsc(memberId);
 
         return items.stream()
                 .map(i -> new IngredientListResponse(
@@ -60,14 +60,18 @@ public class IngredientService {
 
     @Transactional
     public void createIngredient(Long memberId, IngredientCreateRequest ingredientCreateRequest) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        Ingredient newIngredient = ingredientCreateRequest.toEntity();
+        ingredientRepository.save(Ingredient.builder()
+                .memberId(memberId)
+                .ingredientName(ingredientCreateRequest.getName())
+                .quantity(ingredientCreateRequest.getQuantity())
+                .unit(ingredientCreateRequest.getUnit())
+                .expirationDate(ingredientCreateRequest.getExprirationDate())
+                .build());
 
-        ingredientRepository.save(newIngredient);
     }
 
     @Transactional
-    public void updateIngredient(IngredientUpdateRequest ingredientUpdateRequest){
+    public void updateIngredient(IngredientUpdateRequest ingredientUpdateRequest) {
         Long ingredientId = ingredientUpdateRequest.getId();
         String newName = ingredientUpdateRequest.getName();
         int newQuantity = ingredientUpdateRequest.getQuantity();

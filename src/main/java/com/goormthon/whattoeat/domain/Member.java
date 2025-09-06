@@ -1,57 +1,33 @@
+// domain/Member.java
 package com.goormthon.whattoeat.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.Email;
+import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Table(name="members", uniqueConstraints=@UniqueConstraint(columnNames = "email"))
 public class Member {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(unique = true, nullable = false)
+
+    @Email
+    @Column(nullable=false, unique=true)
     private String email;
-    
-    @Column(nullable = false)
-    private String name;
-    
-    @Column
-    private String profileImageUrl;
-    
-    @Column
-    private String kakaoId;
-    
-    @Column
-    private String refreshToken;
-    
-    @Column
-    private LocalDateTime createdAt;
-    
-    @Column
-    private LocalDateTime updatedAt;
-    
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-    
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+
+    @Column(nullable=false)
+    private String passwordHash;  // BCrypt 해시 저장
+
+    @Column(nullable=false)
+    private String role = "USER";
+
+    public Member(String email, String passwordHash) {
+        this.email = email;
+        this.passwordHash = passwordHash;
     }
 }
