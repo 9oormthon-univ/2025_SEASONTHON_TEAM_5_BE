@@ -163,8 +163,12 @@
         <div class="section">
             <h3>4. JWT 토큰 관리</h3>
             <div class="form-group">
-                <label>현재 저장된 JWT 토큰:</label>
+                <label>현재 저장된 Access Token:</label>
                 <div id="currentToken" class="token-display">토큰이 없습니다</div>
+            </div>
+            <div class="form-group">
+                <label>현재 저장된 Refresh Token:</label>
+                <div id="currentRefreshToken" class="token-display">토큰이 없습니다</div>
             </div>
             <button onclick="validateToken()">토큰 검증</button>
             <button onclick="refreshToken()">토큰 갱신</button>
@@ -184,13 +188,14 @@
     </div>
 
     <!-- 카카오 SDK -->
-    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" 
-            integrity="sha384-l+xbElFSnP8/3nAlF4HrVNnJ6eF4bY8k8uOQO/ipvRd7F0H7z3po5h8S5F1d2f3B" 
-            crossorigin="anonymous"></script>
+    <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.0/kakao.min.js" ></script>
+<!--            integrity="sha384-l+xbElFSnP8/3nAlF4HrVNnJ6eF4bY8k8uOQO/ipvRd7F0H7z3po5h8S5F1d2f3B" -->
+<!--            crossorigin="anonymous"></script>-->
 
     <script>
         const BASE_URL = 'http://localhost:8080';
         let currentToken = localStorage.getItem('authToken');
+        let currentRefreshToken = localStorage.getItem('refreshToken');
         let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
         // 페이지 로드 시 토큰 표시
@@ -207,10 +212,18 @@
 
         function updateTokenDisplay() {
             const tokenDisplay = document.getElementById('currentToken');
+            const refreshTokenDisplay = document.getElementById('currentRefreshToken');
+            
             if (currentToken) {
                 tokenDisplay.textContent = currentToken;
             } else {
                 tokenDisplay.textContent = '토큰이 없습니다';
+            }
+            
+            if (currentRefreshToken) {
+                refreshTokenDisplay.textContent = currentRefreshToken;
+            } else {
+                refreshTokenDisplay.textContent = '토큰이 없습니다';
             }
         }
 
@@ -295,7 +308,7 @@
                     const profileImageUrl = userInfo.kakao_account?.profile?.profile_image_url;
 
                     // 3. 백엔드에 액세스 토큰 전송하여 로그인 처리
-                    const backendResponse = await fetch(`${BASE_URL}/accounts/api/kakao/login`, {
+                    const backendResponse = await fetch(`${BASE_URL}/auth/kakao/login`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -307,7 +320,9 @@
                     
                     if (backendResult.status === 'success') {
                         currentToken = backendResult.token;
+                        currentRefreshToken = backendResult.refreshToken;
                         localStorage.setItem('authToken', currentToken);
+                        localStorage.setItem('refreshToken', currentRefreshToken);
                         
                         // 사용자 정보 저장
                         currentUser = {
@@ -320,7 +335,7 @@
                         
                         updateTokenDisplay();
                         updateUserInfoDisplay();
-                        showResult('kakaoOAuthResult', `카카오 로그인 완료!\n이메일: ${email}\n이름: ${name}\nJWT 토큰: ${backendResult.token}\n메시지: ${backendResult.message}`);
+                        showResult('kakaoOAuthResult', `카카오 로그인 완료!\n이메일: ${email}\n이름: ${name}\nAccess Token: ${backendResult.token}\nRefresh Token: ${backendResult.refreshToken}\n메시지: ${backendResult.message}`);
                     } else {
                         showResult('kakaoOAuthResult', `백엔드 로그인 실패: ${backendResult.message}`, false);
                     }
@@ -341,7 +356,7 @@
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/accounts/api/kakao/login`, {
+                const response = await fetch(`${BASE_URL}/auth/kakao/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -353,7 +368,9 @@
                 
                 if (result.status === 'success') {
                     currentToken = result.token;
+                    currentRefreshToken = result.refreshToken;
                     localStorage.setItem('authToken', currentToken);
+                    localStorage.setItem('refreshToken', currentRefreshToken);
                     
                     // 사용자 정보 저장
                     if (result.email) {
@@ -368,7 +385,7 @@
                     
                     updateTokenDisplay();
                     updateUserInfoDisplay();
-                    showResult('manualTokenResult', `로그인 성공!\n이메일: ${result.email || 'N/A'}\n이름: ${result.name || 'N/A'}\nJWT 토큰: ${result.token}\n메시지: ${result.message}`);
+                    showResult('manualTokenResult', `로그인 성공!\n이메일: ${result.email || 'N/A'}\n이름: ${result.name || 'N/A'}\nAccess Token: ${result.token}\nRefresh Token: ${result.refreshToken}\n메시지: ${result.message}`);
                 } else {
                     showResult('manualTokenResult', `로그인 실패: ${result.message}`, false);
                 }
@@ -385,7 +402,7 @@
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/accounts/api/validate`, {
+                const response = await fetch(`${BASE_URL}/auth/validate`, {
                     headers: {
                         'Authorization': `Bearer ${currentToken}`
                     }
@@ -400,26 +417,30 @@
 
         // 토큰 갱신
         async function refreshToken() {
-            if (!currentToken) {
-                showResult('tokenResult', '토큰이 없습니다.', false);
+            if (!currentRefreshToken) {
+                showResult('tokenResult', '리프레시 토큰이 없습니다.', false);
                 return;
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/accounts/api/refresh`, {
+                const response = await fetch(`${BASE_URL}/auth/refresh`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ refreshToken: currentToken })
+                    body: JSON.stringify({ refreshToken: currentRefreshToken })
                 });
 
                 const result = await response.json();
                 if (result.accessToken) {
                     currentToken = result.accessToken;
+                    if (result.refreshToken) {
+                        currentRefreshToken = result.refreshToken;
+                        localStorage.setItem('refreshToken', currentRefreshToken);
+                    }
                     localStorage.setItem('authToken', currentToken);
                     updateTokenDisplay();
-                    showResult('tokenResult', `토큰 갱신 성공!\n새 토큰: ${result.accessToken}`);
+                    showResult('tokenResult', `토큰 갱신 성공!\n새 Access Token: ${result.accessToken}\n새 Refresh Token: ${result.refreshToken || '동일'}`);
                 } else {
                     showResult('tokenResult', `토큰 갱신 실패: ${JSON.stringify(result)}`, false);
                 }
@@ -436,7 +457,7 @@
             }
 
             try {
-                await fetch(`${BASE_URL}/accounts/api/logout`, {
+                await fetch(`${BASE_URL}/auth/logout`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${currentToken}`
@@ -444,8 +465,10 @@
                 });
 
                 currentToken = null;
+                currentRefreshToken = null;
                 currentUser = null;
                 localStorage.removeItem('authToken');
+                localStorage.removeItem('refreshToken');
                 localStorage.removeItem('currentUser');
                 updateTokenDisplay();
                 updateUserInfoDisplay();

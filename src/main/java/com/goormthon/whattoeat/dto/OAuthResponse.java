@@ -11,6 +11,7 @@ import lombok.Builder;
 @Builder
 public class OAuthResponse {
     private String status;
-    private String token;
+    private String token; // Access Token
+    private String refreshToken; // Refresh Token
     private String message;
 }

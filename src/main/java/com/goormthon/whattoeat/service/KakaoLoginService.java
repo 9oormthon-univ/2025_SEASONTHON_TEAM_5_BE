@@ -66,6 +66,7 @@ public class KakaoLoginService {
             return OAuthResponse.builder()
                     .status("success")
                     .token(tokens.get("accessToken"))
+                    .refreshToken(tokens.get("refreshToken"))
                     .message("로그인 성공")
                     .build();
                     
