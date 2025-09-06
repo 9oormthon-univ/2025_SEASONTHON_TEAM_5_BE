@@ -1,5 +1,6 @@
 package com.goormthon.whattoeat.service;
 
+import com.goormthon.whattoeat.domain.Expense;
 import com.goormthon.whattoeat.domain.Ingredient;
 import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.dto.*;
@@ -35,7 +36,7 @@ public class IngredientService {
             int quantity = Integer.parseInt(used.getQuantity());
             String unit = used.getUnit();
 
-            Ingredient stock = ingredientRepository.findByMember_IdAndIngredientName(memberId, name);
+            Ingredient stock = ingredientRepository.findByMemberIdAndIngredientName(memberId, name);
 
             int newQuantity = stock.getQuantity() - quantity;
             stock.updateQuantiy(newQuantity);
@@ -44,7 +45,7 @@ public class IngredientService {
 
     @Transactional(readOnly = true)
     public List<IngredientListResponse> getIngredientList(Long memberId) {
-        List<Ingredient> items = ingredientRepository.findByMember_IdOrderByExpirationDateAscIngredientNameAsc(memberId);
+        List<Ingredient> items = ingredientRepository.findByMemberIdOrderByExpirationDateAscIngredientNameAsc(memberId);
 
         return items.stream()
                 .map(i -> new IngredientListResponse(
@@ -59,14 +60,18 @@ public class IngredientService {
 
     @Transactional
     public void createIngredient(Long memberId, IngredientCreateRequest ingredientCreateRequest) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        Ingredient newIngredient = ingredientCreateRequest.toEntity();
+        ingredientRepository.save(Ingredient.builder()
+                .memberId(memberId)
+                .ingredientName(ingredientCreateRequest.getName())
+                .quantity(ingredientCreateRequest.getQuantity())
+                .unit(ingredientCreateRequest.getUnit())
+                .expirationDate(ingredientCreateRequest.getExprirationDate())
+                .build());
 
-        ingredientRepository.save(newIngredient);
     }
 
     @Transactional
-    public void updateIngredient(IngredientUpdateRequest ingredientUpdateRequest){
+    public void updateIngredient(IngredientUpdateRequest ingredientUpdateRequest) {
         Long ingredientId = ingredientUpdateRequest.getId();
         String newName = ingredientUpdateRequest.getName();
         int newQuantity = ingredientUpdateRequest.getQuantity();

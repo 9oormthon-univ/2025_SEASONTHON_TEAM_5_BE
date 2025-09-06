@@ -1,10 +1,7 @@
 package com.goormthon.whattoeat.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -22,9 +19,18 @@ public class Ingredient {
     private String unit;
     private Date expirationDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "member_id", nullable = false)
+    private Long memberId;
+
+    @Builder
+    public Ingredient(Long memberId, String ingredientName, int quantity, String unit, Date expirationDate){
+        this.memberId=memberId;
+        this.ingredientName = ingredientName;
+        this.quantity = quantity;
+        this.unit=unit;
+        this.expirationDate=expirationDate;
+    }
 
     public void updateQuantiy(int newQuantity){
         if (newQuantity>=0) {
