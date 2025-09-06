@@ -1,17 +1,18 @@
 package com.goormthon.whattoeat.controller;
 
 import com.goormthon.whattoeat.controller.dto.request.CreateExpenseRequest;
+import com.goormthon.whattoeat.controller.dto.response.RecentExpenseResponse;
 import com.goormthon.whattoeat.service.ExpenseService;
 import com.goormthon.whattoeat.tempUser.annotation.TempUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +28,11 @@ public class ExpenseController {
     public ResponseEntity<Void> createExpense(@TempUserId String tempUserId, @RequestBody CreateExpenseRequest expenseRequest) {
         expenseService.createExpense(tempUserId, expenseRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/recents")
+    public ResponseEntity<List<RecentExpenseResponse>> recentExpense(@TempUserId String tempUserId) {
+        List<RecentExpenseResponse> expenses = expenseService.recentExpense(tempUserId);
+        return ResponseEntity.ok(expenses);
     }
 }
