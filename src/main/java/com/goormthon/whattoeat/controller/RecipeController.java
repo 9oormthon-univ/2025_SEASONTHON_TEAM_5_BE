@@ -26,4 +26,5 @@ public class RecipeController {
 //        ingredientService.consumeUsedIngredients(recipeResponse);
         return ResponseEntity.ok(recipeResponse);
     }
+
 }

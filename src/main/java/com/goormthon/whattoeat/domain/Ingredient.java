@@ -1,6 +1,7 @@
 package com.goormthon.whattoeat.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -32,5 +33,19 @@ public class Ingredient {
         else{
             this.quantity = 0;
         }
+    }
+
+    public void update(String newName, int newQuantity, String newUnit, Date newExpirationDate){
+        this.ingredientName = newName;
+        this.quantity = newQuantity;
+        this.unit = newUnit;
+        this.expirationDate = newExpirationDate;
+    }
+
+    public Ingredient(String ingredientName, int quantity, String unit, Date expirationDate){
+        this.ingredientName = ingredientName;
+        this.quantity = quantity;
+        this.unit = unit;
+        this.expirationDate = expirationDate;
     }
 }
