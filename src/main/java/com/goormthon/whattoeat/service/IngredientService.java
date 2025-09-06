@@ -28,7 +28,7 @@ public class IngredientService {
      * @param recipeDto gpt로부터 받은 응답
      */
     @Transactional
-    public void consumeUsedIngredients(Long memberId, RecipeDto recipeDto) {
+    public void consumeUsedIngredients(Member member, RecipeDto recipeDto) {
         if (recipeDto == null) return;
 
         for (RecipeIngredientDto used : recipeDto.getIngredients()) {
@@ -36,7 +36,7 @@ public class IngredientService {
             int quantity = Integer.parseInt(used.getQuantity());
             String unit = used.getUnit();
 
-            Ingredient stock = ingredientRepository.findByMemberIdAndIngredientName(memberId, name);
+            Ingredient stock = ingredientRepository.findByMemberAndIngredientName(member, name);
 
             int newQuantity = stock.getQuantity() - quantity;
             stock.updateQuantiy(newQuantity);
@@ -44,8 +44,8 @@ public class IngredientService {
     }
 
     @Transactional(readOnly = true)
-    public List<IngredientListResponse> getIngredientList(Long memberId) {
-        List<Ingredient> items = ingredientRepository.findByMemberIdOrderByExpirationDateAscIngredientNameAsc(memberId);
+    public List<IngredientListResponse> getIngredientList(Member member) {
+        List<Ingredient> items = ingredientRepository.findByMemberOrderByExpirationDateAscIngredientNameAsc(member);
 
         return items.stream()
                 .map(i -> new IngredientListResponse(
@@ -59,9 +59,9 @@ public class IngredientService {
     }
 
     @Transactional
-    public void createIngredient(Long memberId, IngredientCreateRequest ingredientCreateRequest) {
+    public void createIngredient(Member member, IngredientCreateRequest ingredientCreateRequest) {
         ingredientRepository.save(Ingredient.builder()
-                .memberId(memberId)
+                .member(member)
                 .ingredientName(ingredientCreateRequest.getName())
                 .quantity(ingredientCreateRequest.getQuantity())
                 .unit(ingredientCreateRequest.getUnit())

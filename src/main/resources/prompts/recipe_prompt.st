@@ -3,8 +3,7 @@
 출력은 반드시 JSON 배열로 시작하고 끝나야 하며, 다른 서문·설명·코드블록은 절대 포함하지 마세요.
 
 JSON 스키마:
-{
-"recipeDtoList": [
+[
   {
     "recipe_name": "string",
     "ingredients": [
@@ -19,16 +18,16 @@ JSON 스키마:
     ],
     "description": "string",
     "cook_time_minutes": "integer"
-  }
+  },
 ]
-}
 
 사용자 조건:
 - 보유 재료: {ingredients}
 - 예상 조리 시간: {cook_time_minutes}
 
 규칙:
-- 이 조건을 만족하는 레시피 1~5개를 생성하세요. (가능하면 3개 추천)
+- 이 조건을 만족하는 레시피 2~5개를 생성하세요. (가능하면 3개 추천)
+- 레시피가 1개인 경우에도 JSON 배열에 넣어주세요
 - description은 요리에 대한 짧고 창의적인 요약이어야 합니다.
 - 제공된 재료로 만들 수 있는 실제 존재하는 요리만 추천하세요.
 - 물은 무한정 있다고 가정합니다.

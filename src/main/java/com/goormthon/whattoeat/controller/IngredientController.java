@@ -27,7 +27,7 @@ public class IngredientController {
     @GetMapping
     @Operation(summary = "재료 목록 조회", description = "사용자의 재료 목록을 조회합니다.")
     public ResponseEntity<List<IngredientListResponse>> getIngredientList(@AuthenticationPrincipal Member member) {
-        List<IngredientListResponse> ingredientListResponses = ingredientService.getIngredientList(member.getId());
+        List<IngredientListResponse> ingredientListResponses = ingredientService.getIngredientList(member);
         return ResponseEntity.ok(ingredientListResponses);
     }
 
@@ -36,7 +36,7 @@ public class IngredientController {
     @ApiResponse(responseCode = "200", description = "재료 생성 성공")
     public ResponseEntity<Void> createIngredient(@AuthenticationPrincipal Member member, 
                                                 @RequestBody IngredientCreateRequest ingredientCreateRequest) {
-        ingredientService.createIngredient(member.getId(), ingredientCreateRequest);
+        ingredientService.createIngredient(member, ingredientCreateRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -52,7 +52,7 @@ public class IngredientController {
     @Operation(summary = "레시피에서 재료 차감", description = "레시피를 선택하면 레시피에 표시된 재료와 수량만큼 재고에서 차감합니다.")
     @ApiResponse(responseCode = "200", description = "레시피 재료 차감 성공")
     public ResponseEntity<Void> consumeIngredient(@AuthenticationPrincipal Member member, @RequestBody RecipeDto recipeDto){
-        ingredientService.consumeUsedIngredients(member.getId(), recipeDto);
+        ingredientService.consumeUsedIngredients(member, recipeDto);
         return ResponseEntity.ok().build();
     }
 }

@@ -27,9 +27,9 @@ public class RecipeController {
 
     @PostMapping
     @Operation(summary = "레시피 생성", description = "사용자의 재료를 기반으로 레시피를 생성합니다.")
-    public ResponseEntity<RecipeResponse> getRecipe(@AuthenticationPrincipal Member member,
+    public ResponseEntity<List<RecipeDto>> getRecipe(@AuthenticationPrincipal Member member,
                                                      @RequestBody @Valid RecipeRequest recipeRequest) {
-        RecipeResponse recipeResponse = recipeService.getRecipe(recipeRequest);
+        List<RecipeDto> recipeResponse = recipeService.getRecipe(member, recipeRequest);
         return ResponseEntity.ok(recipeResponse);
     }
 }
