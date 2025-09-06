@@ -1,8 +1,9 @@
 package com.goormthon.whattoeat.controller;
 
-import com.goormthon.whattoeat.controller.dto.response.BudgetResponse;
+import com.goormthon.whattoeat.controller.dto.response.RemainingBudgetResponse;
 import com.goormthon.whattoeat.controller.dto.request.CreateBudgetRequest;
 import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
+import com.goormthon.whattoeat.controller.dto.response.UsedBudgetResponse;
 import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.service.BudgetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,8 +42,14 @@ public class BudgetController {
     @GetMapping("/{budgetId}/remaining")
     @Operation(summary = "남은 예산 조회", description = "예산 ID로 남은 예산을 조회합니다")
     @ApiResponse(responseCode = "200", description = "예산 조회 성공")
-    public ResponseEntity<BudgetResponse> getRemainingBudgets(@AuthenticationPrincipal Member member, @PathVariable long budgetId) {
-        BudgetResponse result = budgetService.getRemainingBudgets(member, budgetId);
+    public ResponseEntity<RemainingBudgetResponse> getRemainingBudgets(@AuthenticationPrincipal Member member, @PathVariable long budgetId) {
+        RemainingBudgetResponse result = budgetService.getRemainingBudgets(member, budgetId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{budgetId}/used")
+    public ResponseEntity<UsedBudgetResponse> getUsedBudgets(@AuthenticationPrincipal Member member, @PathVariable long budgetId) {
+        UsedBudgetResponse result = budgetService.getUsedBudgets(member, budgetId);
         return ResponseEntity.ok(result);
     }
 }
