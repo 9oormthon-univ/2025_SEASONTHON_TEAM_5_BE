@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/budgets")
+@RequestMapping("/api/budgets")
 @Tag(name = "예산", description = "예산 API")
 public class BudgetController {
 
