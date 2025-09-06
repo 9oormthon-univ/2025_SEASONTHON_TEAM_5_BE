@@ -1,6 +1,7 @@
 package com.goormthon.whattoeat.controller;
 
-import com.goormthon.whattoeat.dto.*;
+import com.goormthon.whattoeat.dto.KakaoAccessTokenRequest;
+import com.goormthon.whattoeat.dto.OAuthResponse;
 import com.goormthon.whattoeat.service.JwtService;
 import com.goormthon.whattoeat.service.KakaoLoginService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/accounts/api")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Tag(name = "인증", description = "OAuth 로그인 및 JWT 토큰 관리 API")
 public class AuthController {
@@ -22,35 +23,6 @@ public class AuthController {
     private final KakaoLoginService kakaoLoginService;
     private final JwtService jwtService;
 
-    @PostMapping("/oauth-login")
-    @Operation(summary = "OAuth 로그인", description = "이메일과 프로바이더로 로그인을 시도합니다.")
-    public ResponseEntity<OAuthResponse> oauthLogin(@RequestBody OAuthLoginRequest request) {
-        try {
-            OAuthResponse response = kakaoLoginService.loginWithEmail(request.getEmail(), request.getProvider());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("OAuth 로그인 실패: {}", e.getMessage());
-            return ResponseEntity.ok(OAuthResponse.builder()
-                    .status("error")
-                    .message("로그인 실패: " + e.getMessage())
-                    .build());
-        }
-    }
-
-    @PostMapping("/oauth-register")
-    @Operation(summary = "OAuth 회원가입", description = "이메일, 프로바이더, 닉네임으로 회원가입을 처리합니다.")
-    public ResponseEntity<OAuthResponse> oauthRegister(@RequestBody OAuthRegisterRequest request) {
-        try {
-            OAuthResponse response = kakaoLoginService.register(request.getEmail(), request.getProvider(), request.getNickname());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("OAuth 회원가입 실패: {}", e.getMessage());
-            return ResponseEntity.ok(OAuthResponse.builder()
-                    .status("error")
-                    .message("회원가입 실패: " + e.getMessage())
-                    .build());
-        }
-    }
 
     @PostMapping("/kakao/login")
     @Operation(summary = "카카오 액세스 토큰 로그인", description = "카카오 액세스 토큰으로 로그인을 처리합니다.")
