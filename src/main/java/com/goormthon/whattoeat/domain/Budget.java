@@ -1,10 +1,7 @@
 package com.goormthon.whattoeat.domain;
 
 import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,14 +18,17 @@ public class Budget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     private int amount;
     private LocalDate startDate;
     private LocalDate endDate;
 
     @Builder
-    public Budget(String memberId, int amount, LocalDate startDate, LocalDate endDate) {
-        this.memberId = memberId;
+    public Budget(Member member, int amount, LocalDate startDate, LocalDate endDate) {
+        this.member = member;
         this.amount = amount;
         this.startDate = startDate;
         this.endDate = endDate;

@@ -1,5 +1,6 @@
 package com.goormthon.whattoeat.controller;
 
+import com.goormthon.whattoeat.controller.dto.response.BudgetResponse;
 import com.goormthon.whattoeat.controller.dto.request.CreateBudgetRequest;
 import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
 import com.goormthon.whattoeat.domain.Member;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +24,10 @@ public class BudgetController {
 
     @PostMapping
     @Operation(summary = "예산 생성", description = "특정 기간의 예산을 생성합니다")
-    @ApiResponse(responseCode = "200", description = "예산 생성 성공")
+    @ApiResponse(responseCode = "201", description = "예산 생성 성공")
     public ResponseEntity<Void> createBudget(@AuthenticationPrincipal Member member, @RequestBody CreateBudgetRequest budgetRequest) {
-        budgetService.createBudget(member.getId().toString(), budgetRequest);
-        return ResponseEntity.ok().build();
+        budgetService.createBudget(member, budgetRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{budgetId}")
@@ -34,5 +36,13 @@ public class BudgetController {
     public ResponseEntity<Void> updateBudget(@PathVariable long budgetId, @RequestBody UpdateBudgetRequest budgetRequest) {
         budgetService.updateBudget(budgetId, budgetRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{budgetId}/remaining")
+    @Operation(summary = "남은 예산 조회", description = "예산 ID로 남은 예산을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "예산 조회 성공")
+    public ResponseEntity<BudgetResponse> getRemainingBudgets(@AuthenticationPrincipal Member member, @PathVariable long budgetId) {
+        BudgetResponse result = budgetService.getRemainingBudgets(member, budgetId);
+        return ResponseEntity.ok(result);
     }
 }
