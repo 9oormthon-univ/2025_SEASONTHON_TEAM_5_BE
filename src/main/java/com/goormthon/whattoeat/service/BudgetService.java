@@ -38,7 +38,7 @@ public class BudgetService {
     public BudgetResponse getRemainingBudgets(Member member, long budgetId) {
         Budget findBudget = budgetRepository.findById(budgetId)
                 .orElseThrow();
-        int totalExpense = expenseRepository.findByMemberIdAndDateBetween(member.getId(), findBudget.getStartDate(), findBudget.getEndDate()).stream()
+        int totalExpense = expenseRepository.findByMemberAndDateBetween(member, findBudget.getStartDate(), findBudget.getEndDate()).stream()
                 .mapToInt(Expense::getAmount)
                 .sum();
         return BudgetResponse.builder()

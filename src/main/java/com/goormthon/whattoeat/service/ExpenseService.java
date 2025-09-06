@@ -29,8 +29,8 @@ public class ExpenseService {
                 .build());
     }
 
-    public List<RecentExpenseResponse> recentExpense(String tempUserId) {
-        return expenseRepository.findByMemberIdOrderByDateDesc(tempUserId).stream()
+    public List<RecentExpenseResponse> recentExpense(Member member) {
+        return expenseRepository.findByMemberOrderByDateDesc(member).stream()
                 .map(expense -> RecentExpenseResponse.builder()
                         .title(expense.getTitle())
                         .category(expense.getCategory())

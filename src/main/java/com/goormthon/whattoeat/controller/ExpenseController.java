@@ -35,7 +35,7 @@ public class ExpenseController {
     @Operation(summary = "최근 지출 5개 조회", description = "최근 지출을 최대 5개 반환합니다")
     @ApiResponse(responseCode = "200", description = "지출 조회 성공")
     public ResponseEntity<List<RecentExpenseResponse>> recentExpense(@AuthenticationPrincipal Member member) {
-        List<RecentExpenseResponse> expenses = expenseService.recentExpense(member.getId().toString());
+        List<RecentExpenseResponse> expenses = expenseService.recentExpense(member);
         return ResponseEntity.ok(expenses);
     }
 }
