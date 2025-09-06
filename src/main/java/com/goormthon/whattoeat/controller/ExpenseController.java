@@ -31,6 +31,8 @@ public class ExpenseController {
     }
 
     @GetMapping("/recents")
+    @Operation(summary = "최근 지출 5개 조회", description = "최근 지출을 최대 5개 반환합니다")
+    @ApiResponse(responseCode = "200", description = "지출 조회 성공")
     public ResponseEntity<List<RecentExpenseResponse>> recentExpense(@TempUserId String tempUserId) {
         List<RecentExpenseResponse> expenses = expenseService.recentExpense(tempUserId);
         return ResponseEntity.ok(expenses);
