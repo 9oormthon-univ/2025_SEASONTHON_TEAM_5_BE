@@ -19,13 +19,13 @@ public class Ingredient {
     private String unit;
     private Date expirationDate;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "member_id", nullable = false)
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Builder
-    public Ingredient(Long memberId, String ingredientName, int quantity, String unit, Date expirationDate){
-        this.memberId=memberId;
+    public Ingredient(Member member, String ingredientName, int quantity, String unit, Date expirationDate){
+        this.member=member;
         this.ingredientName = ingredientName;
         this.quantity = quantity;
         this.unit=unit;

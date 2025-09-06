@@ -1,6 +1,8 @@
 package com.goormthon.whattoeat.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.goormthon.whattoeat.domain.Ingredient;
+import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.dto.RecipeRequest;
 import com.goormthon.whattoeat.dto.RecipeDto;
 import com.goormthon.whattoeat.dto.RecipeResponse;
@@ -15,7 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,7 +34,7 @@ public class RecipeService {
         this.ingredientRepository = ingredientRepository;
     }
 
-    public RecipeResponse getRecipe(RecipeRequest request) {
+    public List<RecipeDto> getRecipe(Member member, RecipeRequest request) {
         String template;
         try {
             template = new String(
@@ -47,6 +51,12 @@ public class RecipeService {
         Todo
         userId로 재료 목록 가져오기
          */
+        List<Ingredient> ingredientsList = ingredientRepository.findByMemberOrderByExpirationDateAscIngredientNameAsc(member);
+
+//        String ingredients = ingredientsList.stream()
+//                .map(ing -> ing.getIngredientName() + " " + ing.getQuantity() + ing.getUnit())
+//                .collect(Collectors.joining(", "));
+
         String ingredients = "양파 1개, 감자 1개, 소금 20g, 돼지고기 400g, 카레가루 400g, 우유 400ml, 소시지 500g, 초콜릿 2kg, 케찹 912g";
 
         Map<String, Object> vars = new HashMap<>();
