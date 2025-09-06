@@ -1,5 +1,6 @@
 package com.goormthon.whattoeat.controller;
 
+import com.goormthon.whattoeat.controller.dto.response.BudgetResponse;
 import com.goormthon.whattoeat.controller.dto.request.CreateBudgetRequest;
 import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
 import com.goormthon.whattoeat.domain.Member;
@@ -34,5 +35,11 @@ public class BudgetController {
     public ResponseEntity<Void> updateBudget(@PathVariable long budgetId, @RequestBody UpdateBudgetRequest budgetRequest) {
         budgetService.updateBudget(budgetId, budgetRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{budgetId}/remaining")
+    public ResponseEntity<BudgetResponse> getRemainingBudgets(@AuthenticationPrincipal Member member, @PathVariable long budgetId) {
+        BudgetResponse result = budgetService.getRemainingBudgets(member, budgetId);
+        return ResponseEntity.ok(result);
     }
 }
