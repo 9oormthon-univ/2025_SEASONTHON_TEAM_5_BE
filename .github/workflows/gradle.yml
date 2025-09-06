@@ -42,6 +42,9 @@ jobs:
           RDS_USERNAME: ${{ secrets.RDS_USERNAME }}
           RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
           GPT_API_KEY: ${{ secrets.GPT_API_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_ACCESS_TOKEN_TIME: ${{ secrets.JWT_ACCESS_TOKEN_TIME }}
+          JWT_REFRESH_TOKEN_TIME: ${{ secrets.JWT_REFRESH_TOKEN_TIME }}
 
       # Docker 이미지 Build
       - name: docker image build
@@ -71,6 +74,10 @@ jobs:
           echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> .env
           echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> .env
           echo "GPT_API_KEY=${{ secrets.GPT_API_KEY }}" >> .env
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo "JWT_ACCESS_TOKEN_TIME=${{ secrets.JWT_ACCESS_TOKEN_TIME }}" >> .env
+          echo "JWT_REFRESH_TOKEN_TIME=${{ secrets.JWT_REFRESH_TOKEN_TIME }}" >> .env
+
         shell: bash
 
       - name: docker pull
