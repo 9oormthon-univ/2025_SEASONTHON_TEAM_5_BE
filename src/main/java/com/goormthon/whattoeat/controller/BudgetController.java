@@ -38,6 +38,8 @@ public class BudgetController {
     }
 
     @GetMapping("/{budgetId}/remaining")
+    @Operation(summary = "남은 예산 조회", description = "예산 ID로 남은 예산을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "예산 조회 성공")
     public ResponseEntity<BudgetResponse> getRemainingBudgets(@AuthenticationPrincipal Member member, @PathVariable long budgetId) {
         BudgetResponse result = budgetService.getRemainingBudgets(member, budgetId);
         return ResponseEntity.ok(result);
