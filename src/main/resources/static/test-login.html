@@ -202,10 +202,18 @@
         window.onload = function() {
             updateTokenDisplay();
             updateUserInfoDisplay();
+            
+            // 저장된 카카오 앱 키 복원
+            const savedAppKey = localStorage.getItem('kakaoAppKey');
+            if (savedAppKey) {
+                document.getElementById('kakaoAppKey').value = savedAppKey;
+            }
+            
             // URL에서 인가코드가 있는지 확인
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             if (code) {
+                console.log('카카오 콜백 코드 받음:', code);
                 handleKakaoCallback(code);
             }
         };
@@ -251,6 +259,9 @@
                 return;
             }
 
+            // 앱 키를 localStorage에 저장
+            localStorage.setItem('kakaoAppKey', appKey);
+
             // 카카오 SDK 초기화
             if (!window.Kakao.isInitialized()) {
                 window.Kakao.init(appKey);
@@ -260,22 +271,31 @@
             const redirectUri = window.location.origin + window.location.pathname;
             const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${appKey}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
             
+            console.log('카카오 로그인 URL:', kakaoLoginUrl);
+            
             // 카카오 로그인 페이지로 리다이렉트
             window.location.href = kakaoLoginUrl;
         }
 
         // 카카오 콜백 처리
         async function handleKakaoCallback(code) {
-            const appKey = document.getElementById('kakaoAppKey').value.trim();
+            // localStorage에서 앱 키 가져오기
+            const appKey = localStorage.getItem('kakaoAppKey') || document.getElementById('kakaoAppKey').value.trim();
             if (!appKey) {
-                showResult('kakaoOAuthResult', '카카오 앱 키를 입력해주세요.', false);
+                showResult('kakaoOAuthResult', '카카오 앱 키를 찾을 수 없습니다. 다시 입력해주세요.', false);
                 return;
             }
+            
+            console.log('카카오 콜백 처리 시작, 앱 키:', appKey);
 
             try {
                 showResult('kakaoOAuthResult', '인가코드를 받았습니다. 액세스 토큰을 발급받는 중...');
 
                 // 1. 인가코드로 액세스 토큰 발급
+                const redirectUri = window.location.origin + window.location.pathname;
+                console.log('리다이렉트 URI:', redirectUri);
+                console.log('인가코드:', code);
+                
                 const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
                     method: 'POST',
                     headers: {
@@ -284,12 +304,14 @@
                     body: new URLSearchParams({
                         grant_type: 'authorization_code',
                         client_id: appKey,
-                        redirect_uri: window.location.origin + window.location.pathname,
+                        redirect_uri: redirectUri,
                         code: code
                     })
                 });
 
+                console.log('토큰 응답 상태:', tokenResponse.status);
                 const tokenData = await tokenResponse.json();
+                console.log('토큰 응답 데이터:', tokenData);
                 
                 if (tokenData.access_token) {
                     showResult('kakaoOAuthResult', '액세스 토큰을 받았습니다. 백엔드에서 로그인 처리 중...');
@@ -308,6 +330,7 @@
                     const profileImageUrl = userInfo.kakao_account?.profile?.profile_image_url;
 
                     // 3. 백엔드에 액세스 토큰 전송하여 로그인 처리
+                    console.log('백엔드 로그인 요청 시작:', `${BASE_URL}/auth/kakao/login`);
                     const backendResponse = await fetch(`${BASE_URL}/auth/kakao/login`, {
                         method: 'POST',
                         headers: {
@@ -316,7 +339,9 @@
                         body: JSON.stringify({ accessToken: tokenData.access_token })
                     });
 
+                    console.log('백엔드 응답 상태:', backendResponse.status);
                     const backendResult = await backendResponse.json();
+                    console.log('백엔드 응답 데이터:', backendResult);
                     
                     if (backendResult.status === 'success') {
                         currentToken = backendResult.token;
