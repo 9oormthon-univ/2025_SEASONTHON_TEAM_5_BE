@@ -1,5 +1,6 @@
 package com.goormthon.whattoeat.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goormthon.whattoeat.domain.Ingredient;
 import com.goormthon.whattoeat.domain.Member;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,11 +55,11 @@ public class RecipeService {
          */
         List<Ingredient> ingredientsList = ingredientRepository.findByMemberOrderByExpirationDateAscIngredientNameAsc(member);
 
-//        String ingredients = ingredientsList.stream()
-//                .map(ing -> ing.getIngredientName() + " " + ing.getQuantity() + ing.getUnit())
-//                .collect(Collectors.joining(", "));
+        String ingredients = ingredientsList.stream()
+                .map(ing -> ing.getIngredientName() + " " + ing.getQuantity() + ing.getUnit())
+                .collect(Collectors.joining(", "));
 
-        String ingredients = "양파 1개, 감자 1개, 소금 20g, 돼지고기 400g, 카레가루 400g, 우유 400ml, 소시지 500g, 초콜릿 2kg, 케찹 912g";
+//        String ingredients = "양파 1개, 감자 1개, 소금 20g, 돼지고기 400g, 카레가루 400g, 우유 400ml, 소시지 500g, 초콜릿 2kg, 케찹 912g";
 
         Map<String, Object> vars = new HashMap<>();
         vars.put("ingredients", ingredients);
@@ -78,11 +80,20 @@ public class RecipeService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "OpenAI 답변 로딩 실패", e);
         }
 
-        RecipeResponse recipeResponse;
+        List<RecipeDto> recipeResponse;
         try {
-            recipeResponse = objectMapper.readValue(raw, RecipeResponse.class);
+            recipeResponse = objectMapper.readValue(raw, new TypeReference<List<RecipeDto>>() {});
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "OpenAI 답변 파싱 실패", e);
+            log.warn("⚠️ OpenAI 응답 파싱 실패, 배열로 강제 감쌈. raw={}", raw);
+
+            try {
+                // []로 감싸고 다시 시도
+                String forcedArray = "[" + raw + "]";
+                recipeResponse = objectMapper.readValue(forcedArray, new TypeReference<List<RecipeDto>>() {});
+            } catch (Exception inner) {
+                log.error("❌ 배열 감싸기 후에도 파싱 실패. raw={}", raw, inner);
+                recipeResponse = Collections.emptyList();
+            }
         }
 
         return recipeResponse;
