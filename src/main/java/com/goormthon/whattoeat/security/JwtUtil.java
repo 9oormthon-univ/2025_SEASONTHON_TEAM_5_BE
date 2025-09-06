@@ -15,13 +15,13 @@ public class JwtUtil {
     private final Key key;
     private final long expirationMs;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret,
-                   @Value("${jwt.expiration-ms}") long expirationMs) {
+    public JwtUtil(@Value("${JWT_SECRET_KEY}") String secret,
+                   @Value("${JWT_ACCESS_TOKEN_TIME}") long expirationMs) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.expirationMs = expirationMs;
     }
 
-    public String generateToken(Integer memberId, String email, String role) {
+    public String generateToken(Long memberId, String email, String role) {
         Date now = new Date();
         Date exp = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
