@@ -65,6 +65,7 @@ public class BudgetService {
         Budget findBudget = budgetRepository.findBudgetByDate(member, date)
                 .orElseThrow();
         return ThisMonthBudget.builder()
+                .id(findBudget.getId())
                 .amount(findBudget.getAmount())
                 .build();
     }
