@@ -1,6 +1,7 @@
 package com.goormthon.whattoeat.controller;
 
 import com.goormthon.whattoeat.controller.dto.request.CreateExpenseRequest;
+import com.goormthon.whattoeat.controller.dto.response.ExpenseAnalyzeResponse;
 import com.goormthon.whattoeat.controller.dto.response.RecentExpenseResponse;
 import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.service.ExpenseService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,7 +28,8 @@ public class ExpenseController {
     @PostMapping
     @Operation(summary = "지출 생성", description = "특정일의 지출을 생성합니다")
     @ApiResponse(responseCode = "201", description = "지출 생성 성공")
-    public ResponseEntity<Void> createExpense(@AuthenticationPrincipal Member member, @RequestBody CreateExpenseRequest expenseRequest) {
+    public ResponseEntity<Void> createExpense(@AuthenticationPrincipal Member member,
+                                              @RequestBody CreateExpenseRequest expenseRequest) {
         expenseService.createExpense(member, expenseRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -37,5 +40,11 @@ public class ExpenseController {
     public ResponseEntity<List<RecentExpenseResponse>> recentExpense(@AuthenticationPrincipal Member member) {
         List<RecentExpenseResponse> expenses = expenseService.recentExpense(member);
         return ResponseEntity.ok(expenses);
+    }
+
+    @GetMapping("/analyze")
+    public ResponseEntity<List<ExpenseAnalyzeResponse>> analyzeExpense(@AuthenticationPrincipal Member member) {
+        List<ExpenseAnalyzeResponse> result = expenseService.analyzeRecent6MonthExpense(member, LocalDate.now());
+        return ResponseEntity.ok(result);
     }
 }

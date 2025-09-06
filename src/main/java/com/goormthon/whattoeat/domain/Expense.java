@@ -21,6 +21,10 @@ public class Expense {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "budget_id")
+    private Budget budget;
+
     private int amount;
     private String category;
     private LocalDate date;
@@ -28,8 +32,9 @@ public class Expense {
     private String memo;
 
     @Builder
-    public Expense(Member member, int amount, String category, LocalDate date, String title, String memo) {
+    public Expense(Member member, Budget budget, int amount, String category, LocalDate date, String title, String memo) {
         this.member = member;
+        this.budget = budget;
         this.amount = amount;
         this.category = category;
         this.date = date;

@@ -3,6 +3,7 @@ package com.goormthon.whattoeat.controller;
 import com.goormthon.whattoeat.controller.dto.response.RemainingBudgetResponse;
 import com.goormthon.whattoeat.controller.dto.request.CreateBudgetRequest;
 import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
+import com.goormthon.whattoeat.controller.dto.response.ThisMonthBudget;
 import com.goormthon.whattoeat.controller.dto.response.UsedBudgetResponse;
 import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.service.BudgetService;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,6 +55,14 @@ public class BudgetController {
     @ApiResponse(responseCode = "200", description = "예산 조회 성공")
     public ResponseEntity<UsedBudgetResponse> getUsedBudgets(@AuthenticationPrincipal Member member, @PathVariable long budgetId) {
         UsedBudgetResponse result = budgetService.getUsedBudgets(member, budgetId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{date}")
+    @Operation(summary = "이번달 예산 조회", description = "이번달 예산을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "예산 조회 성공")
+    public ResponseEntity<ThisMonthBudget> getThisMonthBudget(LocalDate date, @AuthenticationPrincipal Member member) {
+        ThisMonthBudget result = budgetService.getThisMonthBudget(date, member);
         return ResponseEntity.ok(result);
     }
 }
