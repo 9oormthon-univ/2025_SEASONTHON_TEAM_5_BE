@@ -2,12 +2,15 @@ package com.goormthon.whattoeat.service;
 
 import com.goormthon.whattoeat.domain.Ingredient;
 import com.goormthon.whattoeat.domain.Member;
-import com.goormthon.whattoeat.dto.IngredientDto;
+import com.goormthon.whattoeat.dto.IngredientListResponse;
+import com.goormthon.whattoeat.dto.RecipeIngredientDto;
 import com.goormthon.whattoeat.dto.RecipeResponse;
 import com.goormthon.whattoeat.repository.IngredientRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class IngredientService {
 
 //        int userId = user.getId();
         int userId = 1;
-        for (IngredientDto used : recipeResponse.getIngredients()) {
+        for (RecipeIngredientDto used : recipeResponse.getIngredients()) {
             String name = used.getName();
             int quantity = Integer.parseInt(used.getQuantity());
             String unit = used.getUnit();
@@ -35,5 +38,20 @@ public class IngredientService {
             int newQuantity = stock.getQuantity() - quantity;
             stock.updateQuantiy(newQuantity);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<IngredientListResponse> getIngredientList(int memberId){
+        List<Ingredient> items = ingredientRepository.findByMember_IdOrderByExpirationDateAscIngredientNameAsc(memberId);
+
+        return items.stream()
+                .map(i -> new IngredientListResponse(
+                        i.getId(),
+                        i.getIngredientName(),
+                        i.getQuantity(),
+                        i.getUnit(),
+                        i.getExpirationDate()
+                ))
+                .toList();
     }
 }
