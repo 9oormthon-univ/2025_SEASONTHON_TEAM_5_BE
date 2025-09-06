@@ -6,7 +6,7 @@ public record CreateExpenseRequest(
         int amount,
         String category,
         LocalDate date,
-        String paymentMethod,
+        String title,
         String memo
 ) {
 }
