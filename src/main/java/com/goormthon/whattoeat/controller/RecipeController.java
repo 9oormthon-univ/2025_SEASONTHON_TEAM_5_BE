@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/recipe")
@@ -25,9 +26,9 @@ public class RecipeController {
 
     @PostMapping
     @Operation(summary = "레시피 생성", description = "사용자의 재료를 기반으로 레시피를 생성합니다.")
-    public ResponseEntity<RecipeResponse> getRecipe(@AuthenticationPrincipal Member member,
-                                                   @RequestBody @Valid RecipeRequest recipeRequest) {
-        RecipeResponse recipeResponse = recipeService.getRecipe(recipeRequest);
+    public List<ResponseEntity<RecipeResponse>> getRecipe(@AuthenticationPrincipal Member member,
+                                                          @RequestBody @Valid RecipeRequest recipeRequest) {
+        List<RecipeResponse> recipeResponse = recipeService.getRecipe(recipeRequest);
         // 사용된 재료 차감
         ingredientService.consumeUsedIngredients(member.getId(), recipeResponse);
         return ResponseEntity.ok(recipeResponse);
