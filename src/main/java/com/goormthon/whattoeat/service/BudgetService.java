@@ -3,6 +3,7 @@ package com.goormthon.whattoeat.service;
 import com.goormthon.whattoeat.controller.dto.request.CreateBudgetRequest;
 import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
 import com.goormthon.whattoeat.domain.Budget;
+import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.repository.BudgetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,9 @@ public class BudgetService {
 
     private final BudgetRepository budgetRepository;
 
-    public void createBudget(String tempUserId, CreateBudgetRequest budgetRequest) {
+    public void createBudget(Member member, CreateBudgetRequest budgetRequest) {
         budgetRepository.save(Budget.builder()
-                .memberId(tempUserId)
+                .member(member)
                 .amount(budgetRequest.amount())
                 .startDate(budgetRequest.startAt())
                 .endDate(budgetRequest.endAt())

@@ -1,9 +1,6 @@
 package com.goormthon.whattoeat.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +16,10 @@ public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String memberId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     private int amount;
     private String category;
@@ -28,8 +28,8 @@ public class Expense {
     private String memo;
 
     @Builder
-    public Expense(String memberId, int amount, String category, LocalDate date, String title, String memo) {
-        this.memberId = memberId;
+    public Expense(Member member, int amount, String category, LocalDate date, String title, String memo) {
+        this.member = member;
         this.amount = amount;
         this.category = category;
         this.date = date;

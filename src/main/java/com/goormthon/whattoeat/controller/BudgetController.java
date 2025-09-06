@@ -24,7 +24,7 @@ public class BudgetController {
     @Operation(summary = "예산 생성", description = "특정 기간의 예산을 생성합니다")
     @ApiResponse(responseCode = "200", description = "예산 생성 성공")
     public ResponseEntity<Void> createBudget(@AuthenticationPrincipal Member member, @RequestBody CreateBudgetRequest budgetRequest) {
-        budgetService.createBudget(member.getId().toString(), budgetRequest);
+        budgetService.createBudget(member, budgetRequest);
         return ResponseEntity.ok().build();
     }
 

@@ -26,7 +26,7 @@ public class ExpenseController {
     @Operation(summary = "지출 생성", description = "특정일의 지출을 생성합니다")
     @ApiResponse(responseCode = "200", description = "지출 생성 성공")
     public ResponseEntity<Void> createExpense(@AuthenticationPrincipal Member member, @RequestBody CreateExpenseRequest expenseRequest) {
-        expenseService.createExpense(member.getId().toString(), expenseRequest);
+        expenseService.createExpense(member, expenseRequest);
         return ResponseEntity.ok().build();
     }
 
