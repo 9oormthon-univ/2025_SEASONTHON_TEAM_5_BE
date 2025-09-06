@@ -48,7 +48,7 @@ public class IngredientController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping
+    @PutMapping("/consume")
     @Operation(summary = "레시피에서 재료 차감", description = "레시피를 선택하면 레시피에 표시된 재료와 수량만큼 재고에서 차감합니다.")
     @ApiResponse(responseCode = "200", description = "레시피 재료 차감 성공")
     public ResponseEntity<Void> consumeIngredient(@AuthenticationPrincipal Member member, @RequestBody RecipeDto recipeDto){
