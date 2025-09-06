@@ -1,30 +1,35 @@
 package com.goormthon.whattoeat.controller;
 
+import com.goormthon.whattoeat.domain.Member;
 import com.goormthon.whattoeat.dto.RecipeRequest;
 import com.goormthon.whattoeat.dto.RecipeResponse;
 import com.goormthon.whattoeat.service.IngredientService;
 import com.goormthon.whattoeat.service.RecipeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/recipe")
+@RequiredArgsConstructor
+@Tag(name = "레시피 관리", description = "레시피 생성 및 관리 API")
 public class RecipeController {
+    
     private final RecipeService recipeService;
     private final IngredientService ingredientService;
 
-    public RecipeController(RecipeService recipeService, IngredientService ingredientService){
-        this.recipeService = recipeService;
-        this.ingredientService = ingredientService;
-    }
-
     @PostMapping
-    public ResponseEntity<RecipeResponse> getRecipe(@RequestBody @Valid RecipeRequest recipeRequest){
-        RecipeResponse recipeResponse= recipeService.getRecipe(recipeRequest);
-//        ingredientService.consumeUsedIngredients(recipeResponse);
+    @Operation(summary = "레시피 생성", description = "사용자의 재료를 기반으로 레시피를 생성합니다.")
+    public ResponseEntity<RecipeResponse> getRecipe(@AuthenticationPrincipal Member member,
+                                                   @RequestBody @Valid RecipeRequest recipeRequest) {
+        RecipeResponse recipeResponse = recipeService.getRecipe(recipeRequest);
+        // 사용된 재료 차감
+        ingredientService.consumeUsedIngredients(member.getId(), recipeResponse);
         return ResponseEntity.ok(recipeResponse);
     }
-
 }
