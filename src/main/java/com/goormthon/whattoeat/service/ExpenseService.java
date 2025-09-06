@@ -47,6 +47,7 @@ public class ExpenseService {
         return expenseRepository.findMonthlyExpense(member, now.minusMonths(6)).stream()
                 .map(expenseDto -> ExpenseAnalyzeResponse.builder()
                         .expense(expenseDto.totalAmount().intValue())
+                        .month(expenseDto.month())
                         .build())
                 .toList();
     }

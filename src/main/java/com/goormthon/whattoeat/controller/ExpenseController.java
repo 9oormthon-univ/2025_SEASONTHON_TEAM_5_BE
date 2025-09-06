@@ -43,6 +43,8 @@ public class ExpenseController {
     }
 
     @GetMapping("/analyze")
+    @Operation(summary = "최근 6개월 기출 분석", description = "최근 지출을 6개월 분석하여 반환합니다")
+    @ApiResponse(responseCode = "200", description = "지출 분석 조회 성공")
     public ResponseEntity<List<ExpenseAnalyzeResponse>> analyzeExpense(@AuthenticationPrincipal Member member) {
         List<ExpenseAnalyzeResponse> result = expenseService.analyzeRecent6MonthExpense(member, LocalDate.now());
         return ResponseEntity.ok(result);

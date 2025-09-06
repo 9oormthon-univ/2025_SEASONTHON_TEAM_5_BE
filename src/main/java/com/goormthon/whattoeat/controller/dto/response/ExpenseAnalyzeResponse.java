@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record ExpenseAnalyzeResponse(
-    int expense
+    int expense,
+    int month
 ) {
 }
