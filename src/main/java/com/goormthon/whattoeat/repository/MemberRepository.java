@@ -1,8 +1,13 @@
 package com.goormthon.whattoeat.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import com.goormthon.whattoeat.domain.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MemberRepository extends JpaRepository<Member, Integer> {
+import java.util.Optional;
 
+public interface MemberRepository extends JpaRepository<Member, Long> {
+    
+    Optional<Member> findByKakaoId(String kakaoId);
+    
+    Optional<Member> findByEmail(String email);
 }

@@ -1,0 +1,6 @@
+jwt:
+  secret: whattoeat-secret-key-for-jwt-token-generation-2024
+  access-token-validity: 3600000  # 1시간 (밀리초)
+  refresh-token-validity: 604800000  # 7일 (밀리초)
+  header: Authorization
+  prefix: Bearer

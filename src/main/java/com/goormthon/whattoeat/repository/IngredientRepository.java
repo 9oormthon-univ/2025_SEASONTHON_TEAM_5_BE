@@ -5,10 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface IngredientRepository extends JpaRepository<Ingredient, Integer> {
-    List<Ingredient> findByMember_Id(Integer memberId);
+public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
+    List<Ingredient> findByMember_Id(Long memberId);
 
-    Ingredient findByMember_IdAndIngredientName(int memberId, String ingredientName);
+    Ingredient findByMember_IdAndIngredientName(Long memberId, String ingredientName);
 
-    List<Ingredient> findByMember_IdOrderByExpirationDateAscIngredientNameAsc(int memberId);
+    List<Ingredient> findByMember_IdOrderByExpirationDateAscIngredientNameAsc(Long memberId);
 }

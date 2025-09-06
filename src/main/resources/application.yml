@@ -4,5 +4,6 @@ spring:
       - log
       - rds
       - openai
+      - jwt
   application:
     name: whattoeat
