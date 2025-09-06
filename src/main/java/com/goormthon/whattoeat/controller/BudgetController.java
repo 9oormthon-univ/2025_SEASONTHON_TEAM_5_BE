@@ -48,6 +48,8 @@ public class BudgetController {
     }
 
     @GetMapping("/{budgetId}/used")
+    @Operation(summary = "기간별 사용한 예산 조회", description = "기간별로 사용한 예산을 조회합니다")
+    @ApiResponse(responseCode = "200", description = "예산 조회 성공")
     public ResponseEntity<UsedBudgetResponse> getUsedBudgets(@AuthenticationPrincipal Member member, @PathVariable long budgetId) {
         UsedBudgetResponse result = budgetService.getUsedBudgets(member, budgetId);
         return ResponseEntity.ok(result);
