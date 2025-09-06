@@ -3,6 +3,7 @@ package com.goormthon.whattoeat.service;
 import com.goormthon.whattoeat.controller.dto.request.CreateBudgetRequest;
 import com.goormthon.whattoeat.controller.dto.request.UpdateBudgetRequest;
 import com.goormthon.whattoeat.controller.dto.response.RemainingBudgetResponse;
+import com.goormthon.whattoeat.controller.dto.response.ThisMonthBudget;
 import com.goormthon.whattoeat.controller.dto.response.UsedBudgetResponse;
 import com.goormthon.whattoeat.domain.Budget;
 import com.goormthon.whattoeat.domain.Expense;
@@ -12,6 +13,8 @@ import com.goormthon.whattoeat.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @Transactional
@@ -55,6 +58,14 @@ public class BudgetService {
         return UsedBudgetResponse.builder()
                 .totalBudget(findBudget.getAmount())
                 .usedBudget(totalExpense)
+                .build();
+    }
+
+    public ThisMonthBudget getThisMonthBudget(LocalDate date, Member member) {
+        Budget findBudget = budgetRepository.findBudgetByDate(member, date)
+                .orElseThrow();
+        return ThisMonthBudget.builder()
+                .amount(findBudget.getAmount())
                 .build();
     }
 }
