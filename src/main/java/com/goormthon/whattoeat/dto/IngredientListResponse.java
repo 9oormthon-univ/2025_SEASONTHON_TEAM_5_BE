@@ -8,7 +8,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class IngredientListResponse {
-    private int id;
+    private Long id;
     private String name;
     private int quantity;
     private String unit;

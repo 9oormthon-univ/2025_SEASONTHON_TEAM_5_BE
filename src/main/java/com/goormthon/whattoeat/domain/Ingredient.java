@@ -15,7 +15,7 @@ import java.util.Date;
 public class Ingredient {
     @Id @Column(name = "ingredient_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String ingredientName;
     private int quantity;

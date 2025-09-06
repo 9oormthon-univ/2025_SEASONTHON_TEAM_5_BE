@@ -24,7 +24,7 @@ public class IngredientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<IngredientListResponse>> getIngredientList(int memberId){
+    public ResponseEntity<List<IngredientListResponse>> getIngredientList(Long memberId){
         List<IngredientListResponse> ingredientListResponses = ingredientService.getIngredientList(memberId);
         return ResponseEntity.ok(ingredientListResponses);
     }
@@ -32,7 +32,7 @@ public class IngredientController {
     @PostMapping
     @ApiResponse(responseCode = "200", description = "?")
     public ResponseEntity<Void> createIngredient(IngredientCreateRequest ingredientCreateRequest){
-        int memberId = 1;
+        Long memberId = 1L;
         ingredientService.createIngredient(memberId, ingredientCreateRequest);
         return ResponseEntity.ok().build();
     }

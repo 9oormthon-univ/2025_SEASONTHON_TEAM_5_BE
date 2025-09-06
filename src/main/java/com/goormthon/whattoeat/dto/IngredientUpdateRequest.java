@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Getter
 public class IngredientUpdateRequest {
-    int id;
+    Long id;
     private String name;
     private int quantity;
     private String unit;

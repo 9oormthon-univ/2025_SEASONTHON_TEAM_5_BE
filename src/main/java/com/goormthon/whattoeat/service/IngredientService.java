@@ -28,7 +28,7 @@ public class IngredientService {
      * @param recipeResponse gpt로부터 받은 응답
      */
     @Transactional
-    public void consumeUsedIngredients(int memberId, RecipeResponse recipeResponse) {
+    public void consumeUsedIngredients(Long memberId, RecipeResponse recipeResponse) {
         if (recipeResponse == null) return;
 
         for (RecipeIngredientDto used : recipeResponse.getIngredients()) {
@@ -44,7 +44,7 @@ public class IngredientService {
     }
 
     @Transactional(readOnly = true)
-    public List<IngredientListResponse> getIngredientList(int memberId) {
+    public List<IngredientListResponse> getIngredientList(Long memberId) {
         List<Ingredient> items = ingredientRepository.findByMember_IdOrderByExpirationDateAscIngredientNameAsc(memberId);
 
         return items.stream()
@@ -59,7 +59,7 @@ public class IngredientService {
     }
 
     @Transactional
-    public void createIngredient(int memberId, IngredientCreateRequest ingredientCreateRequest) {
+    public void createIngredient(Long memberId, IngredientCreateRequest ingredientCreateRequest) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         Ingredient newIngredient = ingredientCreateRequest.toEntity();
 
@@ -68,7 +68,7 @@ public class IngredientService {
 
     @Transactional
     public void updateIngredient(IngredientUpdateRequest ingredientUpdateRequest){
-        int ingredientId = ingredientUpdateRequest.getId();
+        Long ingredientId = ingredientUpdateRequest.getId();
         String newName = ingredientUpdateRequest.getName();
         int newQuantity = ingredientUpdateRequest.getQuantity();
         String newUnit = ingredientUpdateRequest.getUnit();
