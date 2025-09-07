@@ -55,4 +55,11 @@ public class IngredientController {
         ingredientService.consumeUsedIngredients(member, recipeDto);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{ingredientId}")
+    @Operation(summary = "재료 삭제", description = "재료를 삭제하고 싶나?")
+    @ApiResponse(responseCode = "200", description = "재료여 소멸하라!!!")
+    public ResponseEntity<Void> deleteIngredient(@PathVariable Long ingredientId){
+        ingredientService.deleteIngredient(ingredientId);
+    }
 }

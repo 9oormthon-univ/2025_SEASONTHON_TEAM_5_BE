@@ -83,4 +83,10 @@ public class IngredientService {
         ingredient.update(newName, newQuantity, newUnit, newExpirationDate);
 
     }
+
+    @Transactional
+    public void deleteIngredient(Long ingredientId){
+        Ingredient ingredient = ingredientRepository.findById(ingredientId).orElseThrow();
+        ingredientRepository.delete(ingredient);
+    }
 }
