@@ -61,5 +61,6 @@ public class IngredientController {
     @ApiResponse(responseCode = "200", description = "재료여 소멸하라!!!")
     public ResponseEntity<Void> deleteIngredient(@PathVariable Long ingredientId){
         ingredientService.deleteIngredient(ingredientId);
+        return ResponseEntity.ok().build();
     }
 }
